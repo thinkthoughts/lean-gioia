@@ -30,8 +30,8 @@ theorem setBit_singleExcitation_self_false {N : ℕ} (k : Fin N) :
   funext x
   by_cases hx : x = k
   · subst x
-    simp [setBit, singleExcitationBits, vacuumBits]
-  · simp [setBit, singleExcitationBits, vacuumBits, hx]
+    simp [setBit, vacuumBits]
+  · simp [setBit, vacuumBits, hx]
 
 /--
 Any creation string acting on the W state has zero vacuum amplitude.
