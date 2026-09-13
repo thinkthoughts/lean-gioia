@@ -1,3 +1,5 @@
+import LeanGioia.Basic
+
 /-
 Copyright (c) 2026.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -8,20 +10,8 @@ Authors: Dan Hawkley
 # LeanGioia.WState
 
 Checkpoint 1 for Formalization 001.
-
-This file introduces:
-
-* the vacuum state `|0̄⟩`,
-* one-particle computational-basis configurations,
-* one-particle basis states,
-* the normalized W-state coefficient,
-* the W state as the equal superposition of one-particle states.
-
-The next checkpoint will add the operator language needed to state locality
-and the eigenstate obstruction from Corollary 1 of the source paper.
+...
 -/
-
-import LeanGioia.Basic
 
 namespace LeanGioia
 
