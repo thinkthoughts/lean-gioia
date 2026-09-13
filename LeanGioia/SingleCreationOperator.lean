@@ -81,16 +81,17 @@ theorem singleCreationOperator_twoExcitation {N : ℕ}
   rw [singleCreationOperator]
   simp only [Finset.sum_apply, LinearMap.sum_apply, LinearMap.smul_apply,
     Pi.smul_apply, smul_eq_mul]
-  have hterm :
-      ∀ x : Fin N,
-        c x * createAt x (wState N) (twoExcitationBits j l) =
-          if x = j then c j * wCoefficient N
-          else if x = l then c l * wCoefficient N
-          else 0 := by
-    intro x
+  have hsplit :
+      (∑ x : Fin N,
+        c x * createAt x (wState N) (twoExcitationBits j l)) =
+        (∑ x : Fin N, if x = j then c j * wCoefficient N else 0) +
+        (∑ x : Fin N, if x = l then c l * wCoefficient N else 0) := by
+    rw [← Finset.sum_add_distrib]
+    apply Finset.sum_congr rfl
+    intro x hx
     by_cases hxj : x = j
     · subst x
-      simp [createAt_wState_twoExcitation hjl]
+      simp [hjl, createAt_wState_twoExcitation hjl]
     · by_cases hxl : x = l
       · subst x
         have hlj : l ≠ j := Ne.symm hjl
@@ -104,21 +105,9 @@ theorem singleCreationOperator_twoExcitation {N : ℕ}
         simp [hxj, hamp]
       · simp [hxj, hxl,
           createAt_wState_twoExcitation_other hxj hxl]
-  calc
-    (∑ x : Fin N,
-      c x * createAt x (wState N) (twoExcitationBits j l))
-        =
-      ∑ x : Fin N,
-        (if x = j then c j * wCoefficient N
-         else if x = l then c l * wCoefficient N
-         else 0) := by
-          apply Finset.sum_congr rfl
-          intro x hx
-          exact hterm x
-    _ = c j * wCoefficient N + c l * wCoefficient N := by
-          simp [hjl]
-    _ = (c j + c l) * wCoefficient N := by
-          ring
+  rw [hsplit]
+  simp
+  ring
 
 /--
 The W-eigenstate equation forces the pair witness equation at every pair of
