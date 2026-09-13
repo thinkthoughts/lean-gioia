@@ -11,7 +11,7 @@ the sites in `A` occupied together with `l`.
 
 This checkpoint connects the abstract `ExclusionRegion` from Checkpoint 6
 to a concrete buffered support and constructs the corresponding basis-state
-witness.  It proves that, for nonempty local support, the witness lies
+witness. It proves that, for nonempty local support, the witness lies
 outside the one-particle W sector.
 
 The operator-amplitude statements needed to prove that the selected
@@ -25,7 +25,7 @@ namespace LeanGioia
 A local support together with left and right buffer regions.
 
 The paper's Appendix C separation argument only needs the total excluded
-region to have size at most `3R`.  We record that by bounding each of the
+region to have size at most `3R`. We record that by bounding each of the
 three pieces by `R`.
 -/
 structure BufferedSupport (N R : ℕ) where
@@ -46,14 +46,15 @@ def BufferedSupport.toExclusionRegion {N R : ℕ}
     (S : BufferedSupport N R) : ExclusionRegion N R where
   sites := S.excluded
   card_le := by
-    dsimp [BufferedSupport.excluded]
+    have hc : S.core.card ≤ R := S.core_card_le
+    have hl : S.leftBuffer.card ≤ R := S.left_card_le
+    have hr : S.rightBuffer.card ≤ R := S.right_card_le
     calc
       (S.core ∪ S.leftBuffer ∪ S.rightBuffer).card
           ≤ (S.core ∪ S.leftBuffer).card + S.rightBuffer.card :=
         Finset.card_union_le _ _
       _ ≤ (S.core.card + S.leftBuffer.card) + S.rightBuffer.card := by
-        gcongr
-        exact Finset.card_union_le _ _
+        exact Nat.add_le_add_right (Finset.card_union_le _ _) _
       _ ≤ 3 * R := by
         omega
 
@@ -72,8 +73,7 @@ theorem BufferedSupport.separated_not_mem_core {N R : ℕ}
     l.site ∉ S.core := by
   intro hcore
   apply l.separated
-  simp [IsSeparated, BufferedSupport.toExclusionRegion,
-    BufferedSupport.excluded, hcore]
+  simp [BufferedSupport.toExclusionRegion, BufferedSupport.excluded, hcore]
 
 /-- Computational-basis configuration with exactly the sites in `s` occupied. -/
 def occupiedBits {N : ℕ} (s : Finset (Fin N)) : Bitstring N :=
@@ -143,7 +143,9 @@ theorem BufferedSupport.witness_ne_singleExcitation {N R : ℕ}
     have hwl : S.witnessBits l l.site = true :=
       S.witness_site_occupied l
     rw [hwl] at hAtL
-    simp [singleExcitationBits, hql] at hAtL
+    have hlq : l.site = q := by
+      simpa [singleExcitationBits] using hAtL
+    exact hql hlq.symm
 
 /--
 The concrete higher-particle witness has zero W-state amplitude.
@@ -159,6 +161,6 @@ theorem BufferedSupport.wState_witness_zero {N R : ℕ}
   apply Finset.sum_eq_zero
   intro q hq
   apply basisState_apply_ne
-  exact (S.witness_ne_singleExcitation l hcore q).symm
+  exact S.witness_ne_singleExcitation l hcore q
 
 end LeanGioia
