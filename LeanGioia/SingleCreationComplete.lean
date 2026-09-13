@@ -25,11 +25,12 @@ theorem exists_two_other_sites {N : ℕ} (hN : 3 ≤ N) (j : Fin N) :
   have hcard : ({j} : Finset (Fin N)).card < N := by
     simp
     omega
-  obtain ⟨l, hlj⟩ := exists_site_outside_of_card_lt ({j} : Finset (Fin N)) hcard
+  obtain ⟨l, hlj⟩ :=
+    exists_site_outside_of_card_lt ({j} : Finset (Fin N)) hcard
   have hjl : j ≠ l := by
     have hlj' : l ≠ j := by
       simpa using hlj
-  exact Ne.symm hlj'
+    exact Ne.symm hlj'
   have hcard2 : ({j, l} : Finset (Fin N)).card < N := by
     have hcard_pair : ({j, l} : Finset (Fin N)).card = 2 := by
       simp [hjl]
@@ -68,7 +69,8 @@ theorem single_creation_coefficients_zero_of_eigenstate {N : ℕ}
     (hEig : IsEigenstate (singleCreationOperator c) (wState N) eig) :
     c = 0 := by
   funext j
-  exact all_single_creation_coefficients_zero_of_eigenstate hN c eig hEig j
+  exact all_single_creation_coefficients_zero_of_eigenstate
+    hN c eig hEig j
 
 /--
 Paper-facing end-to-end theorem for the `n = 1, m = 0` sector:
@@ -80,6 +82,7 @@ theorem single_creation_forbidden_of_eigenstate {N : ℕ}
     (hN : 3 ≤ N) (c : Fin N → ℂ) (eig : ℂ)
     (hEig : IsEigenstate (singleCreationOperator c) (wState N) eig) :
     SingleCreationForbidden c := by
-  exact all_single_creation_coefficients_zero_of_eigenstate hN c eig hEig
+  exact all_single_creation_coefficients_zero_of_eigenstate
+    hN c eig hEig
 
 end LeanGioia
