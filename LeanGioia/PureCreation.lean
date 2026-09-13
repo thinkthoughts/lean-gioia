@@ -6,20 +6,51 @@ import LeanGioia.LocalOperators
 Checkpoint 4: the algebraic core of Appendix C.1.a.
 
 The full paper argument also uses finite-range spatial separation to rule
-out cancellation among distinct local pure-creation terms.  That locality
+out cancellation among distinct local pure-creation terms. That locality
 step is deliberately deferred.
 -/
 
 namespace LeanGioia
 
+/-- The W state has zero amplitude on the vacuum configuration. -/
+@[simp]
+theorem wState_apply_vacuum (N : ℕ) :
+    wState N (vacuumBits N) = 0 := by
+  classical
+  rw [wState_apply]
+  apply mul_eq_zero_of_right
+  apply Finset.sum_eq_zero
+  intro j hj
+  apply basisState_apply_ne
+  exact (singleExcitationBits_ne_vacuum j).symm
+
+/-- Removing the unique excitation from a single-excitation bitstring gives vacuum. -/
+theorem setBit_singleExcitation_self_false {N : ℕ} (k : Fin N) :
+    setBit (singleExcitationBits k) k false = vacuumBits N := by
+  funext x
+  by_cases hx : x = k
+  · subst x
+    simp [setBit, singleExcitationBits, vacuumBits]
+  · simp [setBit, singleExcitationBits, vacuumBits, hx]
+
+/--
+Any creation string acting on the W state has zero vacuum amplitude.
+
+For the empty string this is just the fact that W has no vacuum component.
+For a nonempty string, the outer creation operator itself gives zero on the
+vacuum output configuration.
+-/
+theorem creationString_wState_zero_on_vacuum {N : ℕ} (js : List (Fin N)) :
+    creationString js (wState N) (vacuumBits N) = 0 := by
+  cases js with
+  | nil =>
+      simp [creationString]
+  | cons j js =>
+      simp [creationString, composeOperator, createAt, vacuumBits]
+
 /--
 A nonempty pure-creation string has zero amplitude on every one-particle
 basis configuration after acting on the W state.
-
-Reason: the outermost creation operator either tries to create on the
-already occupied site (giving zero) or requires an input configuration with
-zero particles, while the W state has support only on one-particle basis
-configurations.
 -/
 theorem creationString_wState_zero_on_singleExcitation {N : ℕ}
     (j : Fin N) (js : List (Fin N)) (k : Fin N) :
@@ -27,11 +58,13 @@ theorem creationString_wState_zero_on_singleExcitation {N : ℕ}
   simp only [creationString, composeOperator_apply]
   by_cases hjk : j = k
   · subst j
-    simp [createAt, singleExcitationBits]
-  · have hfalse : (singleExcitationBits k) j = false := by
+    have hbit : singleExcitationBits k k = true := by
+      simp [singleExcitationBits]
+    simp [createAt, hbit, setBit_singleExcitation_self_false,
+      creationString_wState_zero_on_vacuum]
+  · have hbit : singleExcitationBits k j = false := by
       simp [singleExcitationBits, hjk]
-    simp [createAt, hfalse, setBit, wState_apply, singleExcitationState,
-      basisState, singleExcitationBits, vacuumBits]
+    simp [createAt, hbit]
 
 /--
 For positive system size, a nonempty pure-creation string cannot have the W
@@ -46,7 +79,11 @@ theorem pureCreation_not_w_eigenstate_nonzero {N : ℕ}
     (hW : IsEigenstate (creationString (j :: js)) (wState N) eig) :
     False := by
   let k : Fin N := ⟨0, hN⟩
-  have hamp := congrFun hW (singleExcitationBits k)
+  have hamp :
+      creationString (j :: js) (wState N) (singleExcitationBits k) =
+        eig * wState N (singleExcitationBits k) := by
+    exact (isEigenstate_iff_amplitudes
+      (creationString (j :: js)) (wState N) eig).mp hW (singleExcitationBits k)
   have hleft :
       creationString (j :: js) (wState N) (singleExcitationBits k) = 0 :=
     creationString_wState_zero_on_singleExcitation j js k
@@ -62,9 +99,7 @@ theorem pureCreation_not_w_eigenstate_nonzero {N : ℕ}
         exact singleExcitationState_apply_other hqk
       · simp
     rw [hsum, mul_one]
-  rw [hleft] at hamp
-  simp only [Pi.smul_apply, smul_eq_mul] at hamp
-  rw [hwcoeff] at hamp
+  rw [hleft, hwcoeff] at hamp
   have hsqrt : Real.sqrt (N : ℝ) ≠ 0 := by
     positivity
   have hcoeff : wCoefficient N ≠ 0 := by
