@@ -11,7 +11,7 @@ For coefficients `c : Fin N → ℂ`, define
 `G_c = ∑ j, c j • s†_j`.
 
 Checkpoint 8 showed that at a two-particle basis configuration `{j,l}`,
-only the creation operators at `j` and `l` contribute.  Therefore, if
+only the creation operators at `j` and `l` contribute. Therefore, if
 `G_c |W⟩ = eig |W⟩`, then the W amplitude at `{j,l}` vanishes and the
 coefficient equation
 
@@ -31,6 +31,27 @@ noncomputable def singleCreationOperator {N : ℕ}
   ∑ j : Fin N, c j • createAt j
 
 /--
+For distinct `j` and `l`, the two-particle configuration `{j,l}` differs
+from every single-excitation configuration.
+-/
+theorem twoExcitationBits_ne_singleExcitation {N : ℕ}
+    {j l q : Fin N} (hjl : j ≠ l) :
+    twoExcitationBits j l ≠ singleExcitationBits q := by
+  intro hEq
+  by_cases hqj : q = j
+  · subst q
+    have hAtL := congrFun hEq l
+    have hleft : twoExcitationBits j l l = true := by
+      simp
+    rw [hleft] at hAtL
+    simp [singleExcitationBits, hjl.symm] at hAtL
+  · have hAtJ := congrFun hEq j
+    have hleft : twoExcitationBits j l j = true := by
+      simp
+    rw [hleft] at hAtJ
+    simp [singleExcitationBits, hqj] at hAtJ
+
+/--
 A two-particle basis configuration has zero W-state amplitude when its two
 sites are distinct.
 -/
@@ -43,13 +64,7 @@ theorem wState_twoExcitation_zero {N : ℕ}
   apply Finset.sum_eq_zero
   intro q hq
   apply basisState_apply_ne
-  intro hEq
-  have hj := congrFun hEq j
-  have hl := congrFun hEq l
-  by_cases hqj : q = j
-  · subst q
-    simp [twoExcitationBits, occupiedBits, singleExcitationBits, hjl] at hl
-  · simp [twoExcitationBits, occupiedBits, singleExcitationBits, hqj] at hj
+  exact (twoExcitationBits_ne_singleExcitation hjl).symm
 
 /--
 Action of the explicit single-creation operator on the `{j,l}` witness.
@@ -61,36 +76,48 @@ theorem singleCreationOperator_twoExcitation {N : ℕ}
     singleCreationOperator c (wState N) (twoExcitationBits j l) =
       (c j + c l) * wCoefficient N := by
   classical
-  rw [singleCreationOperator]
-  simp only [Finset.sum_apply, LinearMap.sum_apply, LinearMap.smul_apply,
-    Pi.smul_apply, smul_eq_mul]
-  rw [Finset.sum_eq_add_sum_diff_singleton j]
-  · rw [Finset.sum_eq_add_sum_diff_singleton l]
-    · rw [createAt_wState_twoExcitation hjl]
-      have hlj : l ≠ j := Ne.symm hjl
-      rw [show createAt l (wState N) (twoExcitationBits j l) =
-          wCoefficient N by
-        simpa [twoExcitationBits, Finset.pair_comm] using
-          (createAt_wState_twoExcitation hlj : 
-            createAt l (wState N) (twoExcitationBits l j) = wCoefficient N)]
-      have hrest :
-          ∑ x ∈ (Finset.univ.erase j).erase l,
-              c x * createAt x (wState N) (twoExcitationBits j l) = 0 := by
-        apply Finset.sum_eq_zero
-        intro x hx
-        have hxj : x ≠ j := by
-          intro h
-          subst x
-          simp at hx
-        have hxl : x ≠ l := by
-          intro h
-          subst x
-          simp at hx
-        rw [createAt_wState_twoExcitation_other hxj hxl, mul_zero]
-      rw [hrest, add_zero]
-      ring
-    · simp [hjl]
-  · simp
+  change
+    (∑ x : Fin N,
+      c x * createAt x (wState N) (twoExcitationBits j l)) =
+      (c j + c l) * wCoefficient N
+  have hterm :
+      ∀ x : Fin N,
+        c x * createAt x (wState N) (twoExcitationBits j l) =
+          if x = j then c j * wCoefficient N
+          else if x = l then c l * wCoefficient N
+          else 0 := by
+    intro x
+    by_cases hxj : x = j
+    · subst x
+      simp [createAt_wState_twoExcitation hjl]
+    · by_cases hxl : x = l
+      · subst x
+        have hlj : l ≠ j := Ne.symm hjl
+        have hamp :
+            createAt l (wState N) (twoExcitationBits j l) =
+              wCoefficient N := by
+          simpa [twoExcitationBits, Finset.pair_comm] using
+            (createAt_wState_twoExcitation hlj :
+              createAt l (wState N) (twoExcitationBits l j) =
+                wCoefficient N)
+        simp [hxj, hamp]
+      · simp [hxj, hxl,
+          createAt_wState_twoExcitation_other hxj hxl]
+  calc
+    (∑ x : Fin N,
+      c x * createAt x (wState N) (twoExcitationBits j l))
+        =
+      ∑ x : Fin N,
+        (if x = j then c j * wCoefficient N
+         else if x = l then c l * wCoefficient N
+         else 0) := by
+          apply Finset.sum_congr rfl
+          intro x hx
+          exact hterm x
+    _ = c j * wCoefficient N + c l * wCoefficient N := by
+          simp [hjl]
+    _ = (c j + c l) * wCoefficient N := by
+          ring
 
 /--
 The W-eigenstate equation forces the pair witness equation at every pair of
