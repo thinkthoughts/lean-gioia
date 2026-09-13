@@ -16,7 +16,7 @@ before formalizing locality.
 
 The source paper studies extensive-local operators `G` satisfying
 
-`G |W⟩ = λ |W⟩`
+`G |W⟩ = eig |W⟩`
 
 and proves that locality forces the vacuum `|0̄⟩` to be an eigenstate as
 well.  We deliberately do not encode locality in this checkpoint.
@@ -32,14 +32,14 @@ namespace LeanGioia
 abbrev Operator (N : ℕ) := State N →ₗ[ℂ] State N
 
 /--
-`ψ` is an eigenstate of `A` with eigenvalue `λ`.
+`ψ` is an eigenstate of `A` with eigenvalue `eig`.
 
 This records the eigenvalue equation itself.  For the W state and vacuum
 state used in the project, nonzeroness will be proved separately where
 needed rather than built into this predicate.
 -/
-def IsEigenstate {N : ℕ} (A : Operator N) (ψ : State N) (λ : ℂ) : Prop :=
-  A ψ = λ • ψ
+def IsEigenstate {N : ℕ} (A : Operator N) (ψ : State N) (eig : ℂ) : Prop :=
+  A ψ = eig • ψ
 
 /-- The identity operator on `N` qubits. -/
 def identityOperator (N : ℕ) : Operator N :=
@@ -65,9 +65,9 @@ The eigenvalue equation may be checked coefficient-by-coefficient in the
 computational basis.
 -/
 theorem isEigenstate_iff_amplitudes {N : ℕ}
-    (A : Operator N) (ψ : State N) (λ : ℂ) :
-    IsEigenstate A ψ λ ↔
-      ∀ b : Bitstring N, A ψ b = λ * ψ b := by
+    (A : Operator N) (ψ : State N) (eig : ℂ) :
+    IsEigenstate A ψ eig ↔
+      ∀ b : Bitstring N, A ψ b = eig * ψ b := by
   constructor
   · intro h b
     have hb := congrFun h b
