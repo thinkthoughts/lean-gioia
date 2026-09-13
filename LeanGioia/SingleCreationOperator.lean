@@ -49,7 +49,9 @@ theorem twoExcitationBits_ne_singleExcitation {N : ℕ}
     have hleft : twoExcitationBits j l j = true := by
       simp
     rw [hleft] at hAtJ
-    simp [singleExcitationBits, hqj] at hAtJ
+    have hjq : j = q := by
+      simpa [singleExcitationBits] using hAtJ
+    exact hqj hjq.symm
 
 /--
 A two-particle basis configuration has zero W-state amplitude when its two
@@ -64,7 +66,7 @@ theorem wState_twoExcitation_zero {N : ℕ}
   apply Finset.sum_eq_zero
   intro q hq
   apply basisState_apply_ne
-  exact (twoExcitationBits_ne_singleExcitation hjl).symm
+  exact twoExcitationBits_ne_singleExcitation hjl
 
 /--
 Action of the explicit single-creation operator on the `{j,l}` witness.
@@ -76,10 +78,9 @@ theorem singleCreationOperator_twoExcitation {N : ℕ}
     singleCreationOperator c (wState N) (twoExcitationBits j l) =
       (c j + c l) * wCoefficient N := by
   classical
-  change
-    (∑ x : Fin N,
-      c x * createAt x (wState N) (twoExcitationBits j l)) =
-      (c j + c l) * wCoefficient N
+  rw [singleCreationOperator]
+  simp only [Finset.sum_apply, LinearMap.sum_apply, LinearMap.smul_apply,
+    Pi.smul_apply, smul_eq_mul]
   have hterm :
       ∀ x : Fin N,
         c x * createAt x (wState N) (twoExcitationBits j l) =
