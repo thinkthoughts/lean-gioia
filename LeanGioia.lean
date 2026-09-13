@@ -4,3 +4,4 @@ import LeanGioia.Operator
 import LeanGioia.LocalOperators
 import LeanGioia.PureCreation
 import LeanGioia.Cancellation
+import LeanGioia.Geometry
