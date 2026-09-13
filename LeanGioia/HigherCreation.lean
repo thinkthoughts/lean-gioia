@@ -10,11 +10,11 @@ Appendix C.1.a first treats a pure-creation string
 
 `s†_{j₁} ... s†_{jₙ}`
 
-with `n ≥ 2`.  Acting on the W state produces an `(n+1)`-particle
+with `n ≥ 2`. Acting on the W state produces an `(n+1)`-particle
 configuration obtained by occupying the creator sites together with a
 distant site `l`.
 
-This file formalizes that selected-term amplitude.  For a duplicate-free
+This file formalizes that selected-term amplitude. For a duplicate-free
 list of creator sites `js` and a site `l` outside that list, the pure
 creation string has amplitude exactly `wCoefficient N` on the basis
 configuration occupying `js ∪ {l}`.
@@ -93,9 +93,9 @@ theorem creationString_wState_higherCreationWitness {N : ℕ}
       simp [creationString, higherCreationWitnessBits_nil,
         wState_apply_singleExcitation]
   | cons j js ih =>
-      have hjnotmem : j ∉ js := by
-        exact List.not_mem_of_nodup_cons hnodup
-      have htailnodup : js.Nodup := hnodup.tail
+      have hcons := List.nodup_cons.mp hnodup
+      have hjnotmem : j ∉ js := hcons.1
+      have htailnodup : js.Nodup := hcons.2
       have hjl : j ≠ l := by
         intro h
         subst j
@@ -111,10 +111,8 @@ theorem creationString_wState_higherCreationWitness {N : ℕ}
               (setBit (higherCreationWitnessBits (j :: js) l) j false)
           else 0) =
         wCoefficient N
-      rw [if_pos]
-      · rw [setBit_higherCreationWitness_head_false hjnotmem hjl]
-        exact ih htailnodup hltail
-      · simp
+      simp [setBit_higherCreationWitness_head_false hjnotmem hjl,
+        ih htailnodup hltail]
 
 /--
 For a nonempty creator list and an extra site outside it, the witness lies
@@ -143,7 +141,9 @@ theorem wState_higherCreationWitness_zero {N : ℕ}
         higherCreationWitnessBits (j :: js) l j = true := by
       simp
     rw [hleft] at hCreator
-    simp [singleExcitationBits, hjl.symm] at hCreator
+    have hjl' : j = l := by
+      simpa [singleExcitationBits] using hCreator
+    exact hjl hjl'
   · have hleft :
         higherCreationWitnessBits (j :: js) l l = true := by
       simp
