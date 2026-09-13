@@ -27,7 +27,9 @@ theorem exists_two_other_sites {N : ℕ} (hN : 3 ≤ N) (j : Fin N) :
     omega
   obtain ⟨l, hlj⟩ := exists_site_outside_of_card_lt ({j} : Finset (Fin N)) hcard
   have hjl : j ≠ l := by
-    simpa using hlj
+    have hlj' : l ≠ j := by
+      simpa using hlj
+  exact Ne.symm hlj'
   have hcard2 : ({j, l} : Finset (Fin N)).card < N := by
     have hcard_pair : ({j, l} : Finset (Fin N)).card = 2 := by
       simp [hjl]
