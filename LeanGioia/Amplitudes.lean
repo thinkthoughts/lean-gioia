@@ -77,9 +77,7 @@ theorem createAt_wState_twoExcitation {N : ℕ}
     (if twoExcitationBits j l j = true
       then wState N (setBit (twoExcitationBits j l) j false)
       else 0) = wCoefficient N
-  rw [if_pos (twoExcitationBits_left j l)]
-  rw [setBit_twoExcitation_left_false hjl]
-  exact wState_apply_singleExcitation l
+  simp [setBit_twoExcitation_left_false hjl, wState_apply_singleExcitation]
 
 /--
 A third single-site creation operator cannot contribute to the `{j,l}`
@@ -94,8 +92,7 @@ theorem createAt_wState_twoExcitation_other {N : ℕ}
       else 0) = 0
   have hbit : twoExcitationBits j l k = false := by
     simp [twoExcitationBits, occupiedBits, hkj, hkl]
-  rw [if_neg]
-  simpa using hbit
+  simp [hbit]
 
 /--
 At the `{j,l}` witness, among single-site creation operators only the
