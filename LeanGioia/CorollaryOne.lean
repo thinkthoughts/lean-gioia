@@ -55,11 +55,11 @@ theorem vacuumAnnihilatingFamilyOperator_apply_vacuum
     vacuumAnnihilatingFamilyOperator coeff term (vacuumKet N) = 0 := by
   classical
   rw [vacuumAnnihilatingFamilyOperator]
-  simp only [Finset.sum_apply, LinearMap.sum_apply, LinearMap.smul_apply,
-    Pi.smul_apply, smul_eq_mul]
+  simp only [LinearMap.sum_apply, LinearMap.smul_apply]
   apply Finset.sum_eq_zero
   intro i hi
-  rw [hterm i, mul_zero]
+  rw [hterm i]
+  simp
 
 /--
 Operator form matching the Corollary 1 conclusion after pure-creation terms
@@ -90,15 +90,14 @@ theorem vacuum_eigenstate_of_no_pure_creation_remainder
     (corollaryOneOperator Ω coeff term) (vacuumKet N) Ω).2
   intro b
   rw [corollaryOneOperator]
-  simp only [LinearMap.add_apply, LinearMap.smul_apply, Pi.smul_apply,
-    smul_eq_mul]
+  simp only [LinearMap.add_apply, LinearMap.smul_apply]
+  have hz :=
+    vacuumAnnihilatingFamilyOperator_apply_vacuum coeff term hterm
   have hrem :
-      vacuumAnnihilatingFamilyOperator coeff term (vacuumKet N) b = 0 := by
-    have hz :=
-      vacuumAnnihilatingFamilyOperator_apply_vacuum coeff term hterm
+      (vacuumAnnihilatingFamilyOperator coeff term) (vacuumKet N) b = 0 := by
     exact congrFun hz b
-  rw [hrem, add_zero]
-  rfl
+  rw [Pi.add_apply, hrem]
+  simp [identityOperator]
 
 /--
 Data boundary for the current formal route to Corollary 1.
