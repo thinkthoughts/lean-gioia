@@ -1,10 +1,41 @@
+import LeanGioia.RangeLocality
+
+/-!
+# LeanGioia.PeriodicRange
+
+Checkpoint 23: specialize the finite-range locality layer to explicit
+periodic blocks on `Fin N`.
+
+The source works on a one-dimensional periodic chain and takes every
+range-`R` term to be supported on a contiguous cyclic block. For the
+higher-creation argument it is enough to place every support that can
+overlap a selected range-`R` block inside a cyclic interaction block of
+length at most `3 * R`.
+
+This file introduces an explicit cyclic-block object. Its cardinality is
+proved bounded by its requested width directly from its construction as
+the image of `Finset.range`.
+
+We then build the Checkpoint-22 `FiniteRangeCreationModel` from:
+
+* explicit cyclic support blocks of width `R`;
+* explicit cyclic interaction blocks of width `3 * R`;
+* the geometric overlap-localization statement saying that an overlapping
+  competing support lies in that interaction block.
+
+The numerical hypothesis `3 * R < N` proves the previously abstract
+`interaction_card_lt` condition.
+-/
+
+namespace LeanGioia
+
 /--
 The cyclic block of `width` sites beginning at `start`.
 
 Offsets are interpreted modulo `N`, so this definition passes through the
 PBC link automatically.
 -/
-def cyclicBlock (N width : ℕ) (start : Fin N) : Finset (Fin N) :=
+def cyclicBlock (N width : Nat) (start : Fin N) : Finset (Fin N) :=
   (Finset.range width).image fun t =>
     (⟨(start.1 + t) % N, by
       have hN : 0 < N := by
@@ -16,25 +47,16 @@ Every cyclic block has cardinality at most its requested width.
 No injectivity assumption is needed for this upper bound.
 -/
 theorem cyclicBlock_card_le
-    (N width : ℕ) (start : Fin N) :
+    (N width : Nat) (start : Fin N) :
     (cyclicBlock N width start).card ≤ width := by
   unfold cyclicBlock
-  calc
-    ((Finset.range width).image
-      (fun t =>
-        (⟨(start.1 + t) % N, by
-          have hN : 0 < N := by
-            omega
-          exact Nat.mod_lt _ hN⟩ : Fin N))).card
-        ≤ (Finset.range width).card := Finset.card_image_le
-    _ = width := by
-      simp
+  exact le_trans Finset.card_image_le (by simp)
 
 /--
 Membership form of an explicit cyclic block.
 -/
 theorem mem_cyclicBlock_iff
-    {N width : ℕ} {start x : Fin N} :
+    {N width : Nat} {start x : Fin N} :
     x ∈ cyclicBlock N width start ↔
       ∃ t < width, x.1 = (start.1 + t) % N := by
   constructor
@@ -66,7 +88,7 @@ cardinality condition from `3R < N`; the modular interval proof of
 `overlap_localizes` is isolated as the next geometry lemma.
 -/
 structure PeriodicRangeCreationModel
-    (N R : ℕ) (ι : Type) [Fintype ι]
+    (N R : Nat) (ι : Type) [Fintype ι]
     (creators : ι → List (Fin N)) where
   start : ι → Fin N
 
@@ -91,7 +113,7 @@ The explicit periodic `3R` interaction block is smaller than the full
 chain whenever `3R < N`.
 -/
 theorem periodic_interaction_card_lt
-    {N R : ℕ} (hNR : 3 * R < N) (start : Fin N) :
+    {N R : Nat} (hNR : 3 * R < N) (start : Fin N) :
     (cyclicBlock N (3 * R) start).card < N := by
   have hle :
       (cyclicBlock N (3 * R) start).card ≤ 3 * R :=
@@ -103,7 +125,7 @@ A periodic range model with `3R < N` canonically supplies the abstract
 finite-range model from Checkpoint 22.
 -/
 noncomputable def PeriodicRangeCreationModel.toFiniteRange
-    {N R : ℕ} {ι : Type} [Fintype ι]
+    {N R : Nat} {ι : Type} [Fintype ι]
     {creators : ι → List (Fin N)}
     (M : PeriodicRangeCreationModel N R ι creators)
     (hNR : 3 * R < N) :
@@ -132,7 +154,7 @@ The periodic range model therefore generates all higher-creation witness
 data automatically.
 -/
 noncomputable def all_higherCreationWitnessData_of_periodicRange
-    {N R : ℕ} {ι : Type} [Fintype ι]
+    {N R : Nat} {ι : Type} [Fintype ι]
     {creators : ι → List (Fin N)}
     (M : PeriodicRangeCreationModel N R ι creators)
     (hNR : 3 * R < N)
@@ -142,7 +164,9 @@ noncomputable def all_higherCreationWitnessData_of_periodicRange
       ∀ i : ι, (creators i).Nodup) :
     ∀ i : ι, HigherCreationWitnessData creators i :=
   all_higherCreationWitnessData_of_finiteRange
-    (M.toFiniteRange hNR) hatLeastTwo hNodup
+    (M.toFiniteRange hNR)
+    hatLeastTwo
+    hNodup
 
 /--
 Checkpoint-23 end-to-end Corollary-1 theorem using periodic range data.
@@ -151,7 +175,7 @@ The former abstract `interaction_card_lt` premise has disappeared and is
 now derived from the paper-scale hypothesis `3 * R < N`.
 -/
 theorem corollary_one_from_periodicRange_creation_model
-    {N R : ℕ} {ι κ : Type}
+    {N R : Nat} {ι κ : Type}
     [Fintype ι]
     [Fintype κ] [DecidableEq κ]
     (hN3 : 3 ≤ N)
@@ -176,11 +200,15 @@ theorem corollary_one_from_periodicRange_creation_model
     (hinj :
       Function.Injective
         (fun k : κ => (higherCreators k).toFinset))
-    (M : PeriodicRangeCreationModel N R κ higherCreators)
+    (M :
+      PeriodicRangeCreationModel
+        N R κ higherCreators)
     (hatLeastTwo :
-      ∀ k : κ, 2 ≤ (higherCreators k).toFinset.card)
+      ∀ k : κ,
+        2 ≤ (higherCreators k).toFinset.card)
     (hNodup :
-      ∀ k : κ, (higherCreators k).Nodup)
+      ∀ k : κ,
+        (higherCreators k).Nodup)
     (hbridge :
       PureCreationSectorBridge
         mixedCoeff term
