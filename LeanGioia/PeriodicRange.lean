@@ -52,26 +52,6 @@ theorem mem_cyclicBlock_iff
       simpa using hval.symm
 
 /--
-Membership form of an explicit cyclic block.
--/
-theorem mem_cyclicBlock_iff
-    {N width : ℕ} {start x : Fin N} :
-    x ∈ cyclicBlock N width start ↔
-      ∃ t < width, x.1 = (start.1 + t) % N := by
-  constructor
-  · intro hx
-    rcases Finset.mem_image.mp hx with ⟨t, ht, htx⟩
-    refine ⟨t, ?_, ?_⟩
-    · simpa using ht
-    · exact congrArg Fin.val htx.symm
-  · rintro ⟨t, ht, hval⟩
-    apply Finset.mem_image.mpr
-    refine ⟨t, ?_, ?_⟩
-    · simpa using ht
-    · apply Fin.ext
-      simpa using hval.symm
-
-/--
 Concrete periodic range-`R` support data.
 
 `start i` gives the left endpoint of the selected cyclic range block.
