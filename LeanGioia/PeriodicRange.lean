@@ -38,6 +38,7 @@ PBC link automatically.
 def cyclicBlock (N width : Nat) (start : Fin N) : Finset (Fin N) :=
   (Finset.range width).image fun t =>
     (⟨(start.1 + t) % N, by
+      have hstart : start.1 < N := start.2
       have hN : 0 < N := by
         omega
       exact Nat.mod_lt _ hN⟩ : Fin N)
