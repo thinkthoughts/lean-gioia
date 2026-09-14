@@ -6,7 +6,7 @@ import LeanGioia.CyclicOffset
 Checkpoint 28: extract canonical coordinates from a periodic overlap.
 
 Checkpoint 27 normalized cyclic-block membership into inequalities for
-`cyclicOffset`.  This checkpoint applies that normalization to the exact
+`cyclicOffset`. This checkpoint applies that normalization to the exact
 overlap hull.
 
 For any `x ∈ overlapInteraction N R start`, Lean now extracts:
@@ -78,7 +78,28 @@ noncomputable def overlapCoordinateWitness_of_mem
         x ∈ cyclicBlock N R competitorStart := by
     simpa [overlapInteraction] using hx
 
-  rcases hx' with ⟨c, hoverlap, hxc⟩
+  have hcNonempty :
+      Nonempty
+        {c : Fin N //
+          ¬ Disjoint
+            (cyclicBlock N R c)
+            (cyclicBlock N R start) ∧
+          x ∈ cyclicBlock N R c} := by
+    rcases hx' with ⟨c, hoverlap, hxc⟩
+    exact ⟨⟨c, hoverlap, hxc⟩⟩
+
+  let cw := Classical.choice hcNonempty
+  let c : Fin N := cw.1
+
+  have hoverlap :
+      ¬ Disjoint
+        (cyclicBlock N R c)
+        (cyclicBlock N R start) := by
+    exact cw.2.1
+
+  have hxc :
+      x ∈ cyclicBlock N R c := by
+    exact cw.2.2
 
   have hcommon :
       ∃ y : Fin N,
@@ -86,16 +107,93 @@ noncomputable def overlapCoordinateWitness_of_mem
         y ∈ cyclicBlock N R start := by
     exact Finset.not_disjoint_iff.mp hoverlap
 
-  rcases hcommon with ⟨y, hyc, hys⟩
+  have hyNonempty :
+      Nonempty
+        {y : Fin N //
+          y ∈ cyclicBlock N R c ∧
+          y ∈ cyclicBlock N R start} := by
+    rcases hcommon with ⟨y, hyc, hys⟩
+    exact ⟨⟨y, hyc, hys⟩⟩
 
-  rcases mem_cyclicBlock_iff.mp hys with
-    ⟨a, ha, hya⟩
+  let yw := Classical.choice hyNonempty
+  let y : Fin N := yw.1
 
-  rcases mem_cyclicBlock_iff.mp hyc with
-    ⟨b, hb, hyb⟩
+  have hyc :
+      y ∈ cyclicBlock N R c := by
+    exact yw.2.1
 
-  rcases mem_cyclicBlock_iff.mp hxc with
-    ⟨d, hd, hxd⟩
+  have hys :
+      y ∈ cyclicBlock N R start := by
+    exact yw.2.2
+
+  have haExists :
+      ∃ a < R,
+        y.1 = (start.1 + a) % N :=
+    mem_cyclicBlock_iff.mp hys
+
+  have haNonempty :
+      Nonempty
+        {a : Nat //
+          a < R ∧
+          y.1 = (start.1 + a) % N} := by
+    rcases haExists with ⟨a, ha, hya⟩
+    exact ⟨⟨a, ha, hya⟩⟩
+
+  let aw := Classical.choice haNonempty
+  let a : Nat := aw.1
+
+  have ha : a < R := by
+    exact aw.2.1
+
+  have hya :
+      y.1 = (start.1 + a) % N := by
+    exact aw.2.2
+
+  have hbExists :
+      ∃ b < R,
+        y.1 = (c.1 + b) % N :=
+    mem_cyclicBlock_iff.mp hyc
+
+  have hbNonempty :
+      Nonempty
+        {b : Nat //
+          b < R ∧
+          y.1 = (c.1 + b) % N} := by
+    rcases hbExists with ⟨b, hb, hyb⟩
+    exact ⟨⟨b, hb, hyb⟩⟩
+
+  let bw := Classical.choice hbNonempty
+  let b : Nat := bw.1
+
+  have hb : b < R := by
+    exact bw.2.1
+
+  have hyb :
+      y.1 = (c.1 + b) % N := by
+    exact bw.2.2
+
+  have hdExists :
+      ∃ d < R,
+        x.1 = (c.1 + d) % N :=
+    mem_cyclicBlock_iff.mp hxc
+
+  have hdNonempty :
+      Nonempty
+        {d : Nat //
+          d < R ∧
+          x.1 = (c.1 + d) % N} := by
+    rcases hdExists with ⟨d, hd, hxd⟩
+    exact ⟨⟨d, hd, hxd⟩⟩
+
+  let dw := Classical.choice hdNonempty
+  let d : Nat := dw.1
+
+  have hd : d < R := by
+    exact dw.2.1
+
+  have hxd :
+      x.1 = (c.1 + d) % N := by
+    exact dw.2.2
 
   exact
     { competitorStart := c
@@ -155,7 +253,28 @@ noncomputable def canonicalOverlapCoordinates_of_mem
         x ∈ cyclicBlock N R competitorStart := by
     simpa [overlapInteraction] using hx
 
-  rcases hx' with ⟨c, hoverlap, hxc⟩
+  have hcNonempty :
+      Nonempty
+        {c : Fin N //
+          ¬ Disjoint
+            (cyclicBlock N R c)
+            (cyclicBlock N R start) ∧
+          x ∈ cyclicBlock N R c} := by
+    rcases hx' with ⟨c, hoverlap, hxc⟩
+    exact ⟨⟨c, hoverlap, hxc⟩⟩
+
+  let cw := Classical.choice hcNonempty
+  let c : Fin N := cw.1
+
+  have hoverlap :
+      ¬ Disjoint
+        (cyclicBlock N R c)
+        (cyclicBlock N R start) := by
+    exact cw.2.1
+
+  have hxc :
+      x ∈ cyclicBlock N R c := by
+    exact cw.2.2
 
   have hcommon :
       ∃ y : Fin N,
@@ -163,7 +282,24 @@ noncomputable def canonicalOverlapCoordinates_of_mem
         y ∈ cyclicBlock N R start := by
     exact Finset.not_disjoint_iff.mp hoverlap
 
-  rcases hcommon with ⟨y, hyc, hys⟩
+  have hyNonempty :
+      Nonempty
+        {y : Fin N //
+          y ∈ cyclicBlock N R c ∧
+          y ∈ cyclicBlock N R start} := by
+    rcases hcommon with ⟨y, hyc, hys⟩
+    exact ⟨⟨y, hyc, hys⟩⟩
+
+  let yw := Classical.choice hyNonempty
+  let y : Fin N := yw.1
+
+  have hyc :
+      y ∈ cyclicBlock N R c := by
+    exact yw.2.1
+
+  have hys :
+      y ∈ cyclicBlock N R start := by
+    exact yw.2.2
 
   exact
     { competitorStart := c
