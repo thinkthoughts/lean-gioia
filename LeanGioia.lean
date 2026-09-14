@@ -21,3 +21,4 @@ import LeanGioia.NormalOrdered
 import LeanGioia.MixedExpansion
 import LeanGioia.PureCreationBridge
 import LeanGioia.RangeLocality
+import LeanGioia.PeriodicRange
