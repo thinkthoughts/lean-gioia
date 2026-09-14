@@ -91,7 +91,6 @@ theorem higherCreationFamilyOperator_selected_witness
   simp only [Finset.sum_apply, LinearMap.sum_apply, LinearMap.smul_apply,
     Pi.smul_apply, smul_eq_mul]
   rw [Finset.sum_eq_single i₀]
-  · rfl
   · intro i hi hne
     rw [competing_higherCreation_amplitude_zero
       creators i₀ i l hcard hl hlocal hinj hne, mul_zero]
