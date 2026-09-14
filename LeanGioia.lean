@@ -15,3 +15,4 @@ import LeanGioia.HigherCreation
 import LeanGioia.HigherCreationUniqueness
 import LeanGioia.HigherCreationContribution
 import LeanGioia.HigherCreationComplete
+import LeanGioia.TableIRowOne
