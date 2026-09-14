@@ -25,3 +25,4 @@ import LeanGioia.PeriodicRange
 import LeanGioia.PeriodicOverlap
 import LeanGioia.PeriodicOverlapBound
 import LeanGioia.PeriodicOverlapContainment
+import LeanGioia.CyclicOffset
