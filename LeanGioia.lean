@@ -18,3 +18,4 @@ import LeanGioia.HigherCreationComplete
 import LeanGioia.TableIRowOne
 import LeanGioia.CorollaryOne
 import LeanGioia.NormalOrdered
+import LeanGioia.MixedExpansion
