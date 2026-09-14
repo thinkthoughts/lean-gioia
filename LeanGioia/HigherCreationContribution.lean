@@ -209,7 +209,7 @@ theorem creationString_nonzero_represents_higherCreationWitness {N : ℕ}
       simpa [higherCreationWitnessBits, occupiedBits] using hwx
   · intro hx
     by_cases hxks : x ∈ ks.toFinset
-    · exact Finset.mem_insert_of_mem q hxks
+    · exact Finset.mem_insert_of_mem hxks
     · have hxlist : x ∉ ks := by
         simpa using hxks
       have hwx :
