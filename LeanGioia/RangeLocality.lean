@@ -126,7 +126,7 @@ theorem finiteRange_separatedLocalCompetitor
 Construct the complete higher-creation witness data required by
 Checkpoint 17 from finite-range support geometry.
 -/
-theorem higherCreationWitnessData_of_finiteRange
+noncomputable def higherCreationWitnessData_of_finiteRange
     {N : ℕ} {ι : Type} [Fintype ι]
     {creators : ι → List (Fin N)}
     (M : FiniteRangeCreationModel N ι creators)
@@ -137,17 +137,30 @@ theorem higherCreationWitnessData_of_finiteRange
     (i : ι) :
     HigherCreationWitnessData creators i := by
   classical
-  obtain ⟨l, hl⟩ :=
+
+  have hex :
+      ∃ l : Fin N, l ∉ M.interaction i :=
     finiteRange_exists_witness_outside_interaction M i
+
+  have hn :
+      Nonempty {l : Fin N // l ∉ M.interaction i} := by
+    rcases hex with ⟨l, hl⟩
+    exact ⟨⟨l, hl⟩⟩
+
+  let w : {l : Fin N // l ∉ M.interaction i} :=
+    Classical.choice hn
+
   refine
-    { witnessSite := l
+    { witnessSite := w.1
       atLeastTwo := hatLeastTwo i
       nodup := hNodup i
       witnessOutside := ?_
       locality := ?_ }
-  · exact finiteRange_witness_outside_creators M hl
+
+  · exact finiteRange_witness_outside_creators M w.2
+
   · intro k
-    exact finiteRange_separatedLocalCompetitor M hl
+    exact finiteRange_separatedLocalCompetitor M w.2
 
 /--
 All higher-creation terms receive witness data uniformly from one
