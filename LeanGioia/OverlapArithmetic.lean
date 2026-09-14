@@ -55,13 +55,18 @@ theorem canonicalOverlap_in_threeR_region
     (start x : Fin N)
     (h : CanonicalOverlapCoordinates N R start x) :
     InThreeRCoverRegion R start x := by
+
   have hsplit :=
     relativeOverlapOffset_forward_or_backward
       hNR
       h.shared_from_selected_lt
       h.shared_from_competitor_lt
       h.x_from_competitor_lt
+
+  unfold InThreeRCoverRegion
+
   rw [hcomp start x h]
+
   exact hsplit
 
 def CanonicalOverlapInThreeRRegion (N R : Nat) : Prop :=
