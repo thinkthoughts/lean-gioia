@@ -12,3 +12,4 @@ import LeanGioia.SingleCreation
 import LeanGioia.SingleCreationOperator
 import LeanGioia.SingleCreationComplete
 import LeanGioia.HigherCreation
+import LeanGioia.HigherCreationUniqueness
