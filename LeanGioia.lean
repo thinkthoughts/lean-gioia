@@ -19,3 +19,4 @@ import LeanGioia.TableIRowOne
 import LeanGioia.CorollaryOne
 import LeanGioia.NormalOrdered
 import LeanGioia.MixedExpansion
+import LeanGioia.PureCreationBridge
