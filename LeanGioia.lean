@@ -16,3 +16,4 @@ import LeanGioia.HigherCreationUniqueness
 import LeanGioia.HigherCreationContribution
 import LeanGioia.HigherCreationComplete
 import LeanGioia.TableIRowOne
+import LeanGioia.CorollaryOne
