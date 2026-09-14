@@ -56,6 +56,11 @@ The canonical offset is therefore the group difference `x - start`.
 theorem cyclicOffsetFin_eq_sub
     {N : Nat} (start x : Fin N) :
     cyclicOffsetFin start x = x - start := by
+  have hstart : start.1 < N := start.2
+  have hN : 0 < N := by
+    omega
+  letI : NeZero N := ⟨Nat.ne_of_gt hN⟩
+
   have h₁ :
       start + cyclicOffsetFin start x = x :=
     start_add_cyclicOffsetFin start x
@@ -79,6 +84,11 @@ theorem cyclicOffsetFin_compose_through_shared
       cyclicOffsetFin start shared +
         cyclicOffsetFin competitorStart x -
           cyclicOffsetFin competitorStart shared := by
+  have hstart : start.1 < N := start.2
+  have hN : 0 < N := by
+    omega
+  letI : NeZero N := ⟨Nat.ne_of_gt hN⟩
+
   rw [cyclicOffsetFin_eq_sub]
   rw [cyclicOffsetFin_eq_sub]
   rw [cyclicOffsetFin_eq_sub]
