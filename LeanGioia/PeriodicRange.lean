@@ -1,34 +1,3 @@
-import LeanGioia.RangeLocality
-
-/-!
-# LeanGioia.PeriodicRange
-
-Checkpoint 23: specialize the finite-range locality layer to explicit
-periodic blocks on `Fin N`.
-
-The source works on a one-dimensional periodic chain and takes every
-range-`R` term to be supported on a contiguous cyclic block.  For the
-higher-creation argument it is enough to place every support that can
-overlap a selected range-`R` block inside a cyclic interaction block of
-length at most `3 * R`.
-
-This file introduces an explicit cyclic-block object.  Its cardinality is
-proved bounded by its requested width directly from its construction as
-the image of `Finset.range`.
-
-We then build the Checkpoint-22 `FiniteRangeCreationModel` from:
-
-* explicit cyclic support blocks of width `R`;
-* explicit cyclic interaction blocks of width `3 * R`;
-* the geometric overlap-localization statement saying that an overlapping
-  competing support lies in that interaction block.
-
-The numerical hypothesis `3 * R < N` proves the previously abstract
-`interaction_card_lt` condition.
--/
-
-namespace LeanGioia
-
 /--
 The cyclic block of `width` sites beginning at `start`.
 
@@ -37,9 +6,10 @@ PBC link automatically.
 -/
 def cyclicBlock (N width : ℕ) (start : Fin N) : Finset (Fin N) :=
   (Finset.range width).image fun t =>
-    ⟨(start.1 + t) % N, by
-      have hN : 0 < N := Fin.pos_iff_nonempty.mp ⟨start⟩
-      exact Nat.mod_lt _ hN⟩
+    (⟨(start.1 + t) % N, by
+      have hN : 0 < N := by
+        omega
+      exact Nat.mod_lt _ hN⟩ : Fin N)
 
 /--
 Every cyclic block has cardinality at most its requested width.
@@ -50,12 +20,36 @@ theorem cyclicBlock_card_le
     (cyclicBlock N width start).card ≤ width := by
   unfold cyclicBlock
   calc
-    ((Finset.range width).image fun t =>
-      ⟨(start.1 + t) % N, by
-        have hN : 0 < N := Fin.pos_iff_nonempty.mp ⟨start⟩
-        exact Nat.mod_lt _ hN⟩).card
+    ((Finset.range width).image
+      (fun t =>
+        (⟨(start.1 + t) % N, by
+          have hN : 0 < N := by
+            omega
+          exact Nat.mod_lt _ hN⟩ : Fin N))).card
         ≤ (Finset.range width).card := Finset.card_image_le
-    _ = width := by simp
+    _ = width := by
+      simp
+
+/--
+Membership form of an explicit cyclic block.
+-/
+theorem mem_cyclicBlock_iff
+    {N width : ℕ} {start x : Fin N} :
+    x ∈ cyclicBlock N width start ↔
+      ∃ t < width, x.1 = (start.1 + t) % N := by
+  constructor
+  · intro hx
+    rcases Finset.mem_image.mp hx with ⟨t, ht, htx⟩
+    refine ⟨t, ?_, ?_⟩
+    · simpa using ht
+    · have hval := congrArg Fin.val htx
+      simpa using hval.symm
+  · rintro ⟨t, ht, hval⟩
+    apply Finset.mem_image.mpr
+    refine ⟨t, ?_, ?_⟩
+    · simpa using ht
+    · apply Fin.ext
+      simpa using hval.symm
 
 /--
 Membership form of an explicit cyclic block.
