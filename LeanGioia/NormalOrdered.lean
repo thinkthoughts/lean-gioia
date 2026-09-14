@@ -40,7 +40,12 @@ theorem annihilateAtNO_vacuum {N : ℕ} (k : Fin N) :
     annihilateAtNO k (vacuumKet N) = 0 := by
   funext b
   by_cases hbk : b k = false
-  · simp [annihilateAtNO, hbk, vacuumKet, basisState, vacuumBits, setBit]
+  · have hne :
+        setBit b k true ≠ vacuumBits N := by
+      intro hEq
+      have hk := congrFun hEq k
+      simp [setBit, vacuumBits] at hk
+    simp [annihilateAtNO, hbk, vacuumKet, basisState, hne]
   · simp [annihilateAtNO, hbk]
 
 theorem annihilationStringNO_vacuum_of_nonempty {N : ℕ}
