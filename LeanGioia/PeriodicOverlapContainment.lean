@@ -10,13 +10,14 @@ For a selected start `s`, every site `x` in a block overlapping the
 selected range-`R` block has a cyclic offset from `s` of one of two forms:
 
 * forward: `x = s + d (mod N)` with `d < 2R`;
-* backward: `x = s - d (mod N)` with `d ≤ R`.
+* backward: `x` lies in the `R`-site cyclic block beginning at
+  `cyclicBackStart N R s`.
 
 Those are exactly the two pieces of `threeRInteractionCover`.
 
 This file proves the cover membership from those offset certificates and
 packages the only remaining modular-arithmetic fact as a proposition
-`OverlapOffsetBound`.  The operator/locality chain then depends only on
+`OverlapOffsetBound`. The operator/locality chain then depends only on
 that one arithmetic statement.
 
 The next checkpoint can prove `OverlapOffsetBound` directly from two
@@ -33,17 +34,6 @@ def IsForwardOffset
   ∃ d < bound, x.1 = (start.1 + d) % N
 
 /--
-Backward offset certificate from `start`.
-
-`d = 0` is allowed, so the selected start itself satisfies both the
-forward and backward descriptions.
--/
-def IsBackwardOffset
-    {N : Nat} (start x : Fin N) (bound : Nat) : Prop :=
-  ∃ d ≤ bound,
-    x.1 = (start.1 + N - (d % N)) % N
-
-/--
 A forward offset `< width` is exactly enough to prove membership in the
 corresponding cyclic block.
 -/
@@ -55,17 +45,14 @@ theorem mem_cyclicBlock_of_forwardOffset
   exact mem_cyclicBlock_iff.mpr ⟨d, hd, hx⟩
 
 /--
-A backward offset bounded by `R` lies in the backward `R` block used by
-`threeRInteractionCover`, except for the endpoint `d = R`; that endpoint
-is the left endpoint of the backward block itself.
-
-To avoid an off-by-one convention, the certificate used below asks for
-`d < R`.
+A backward-side certificate expressed directly relative to the beginning
+of the backward `R` block used by `threeRInteractionCover`.
 -/
 def IsStrictBackwardOffset
     {N : Nat} (start x : Fin N) (R : Nat) : Prop :=
   ∃ d < R,
-    x.1 = (start.1 + N - ((R - d) % N)) % N
+    x.1 =
+      ((cyclicBackStart N R start).1 + d) % N
 
 /--
 A strict backward certificate places a site in the backward component of
@@ -76,11 +63,7 @@ theorem mem_backwardBlock_of_strictBackwardOffset
     (h : IsStrictBackwardOffset start x R) :
     x ∈ cyclicBlock N R (cyclicBackStart N R start) := by
   rcases h with ⟨d, hd, hx⟩
-  apply mem_cyclicBlock_iff.mpr
-  refine ⟨d, hd, ?_⟩
-  unfold cyclicBackStart
-  simp only [Fin.val_mk]
-  exact hx
+  exact mem_cyclicBlock_iff.mpr ⟨d, hd, hx⟩
 
 /--
 Arithmetic certificate sufficient for membership in the explicit
@@ -110,7 +93,8 @@ theorem mem_threeRInteractionCover_of_offset
 The single remaining modular-arithmetic specification:
 
 every site in the exact overlap hull admits either the forward `< 2R`
-offset certificate or the strict backward `< R` certificate.
+offset certificate or membership in the backward `R` component of the
+explicit interaction cover.
 -/
 def OverlapOffsetBound (N R : Nat) : Prop :=
   ∀ (start x : Fin N),
