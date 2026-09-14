@@ -56,8 +56,15 @@ The canonical offset is therefore the group difference `x - start`.
 theorem cyclicOffsetFin_eq_sub
     {N : Nat} (start x : Fin N) :
     cyclicOffsetFin start x = x - start := by
-  have h := start_add_cyclicOffsetFin start x
-  fin_omega
+  have h₁ :
+      start + cyclicOffsetFin start x = x :=
+    start_add_cyclicOffsetFin start x
+
+  have h₂ :
+      start + (x - start) = x := by
+    abel
+
+  exact add_left_cancel (h₁.trans h₂.symm)
 
 /--
 Cyclic offsets compose through a shared point.
@@ -76,7 +83,7 @@ theorem cyclicOffsetFin_compose_through_shared
   rw [cyclicOffsetFin_eq_sub]
   rw [cyclicOffsetFin_eq_sub]
   rw [cyclicOffsetFin_eq_sub]
-  fin_omega
+  abel
 
 /--
 The `Fin N` form of the canonical overlap composition proposition.
