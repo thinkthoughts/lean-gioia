@@ -29,3 +29,4 @@ import LeanGioia.CyclicOffset
 import LeanGioia.OverlapCoordinates
 import LeanGioia.OverlapArithmetic
 import LeanGioia.OffsetComposition
+import LeanGioia.FinRelativeOffset
