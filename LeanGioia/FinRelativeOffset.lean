@@ -17,7 +17,7 @@ The target expression
 
 `relativeOverlapOffset N a.val b.val d.val`
 
-encodes the same residue as
+encodes the same cyclic residue as
 
 `(a.val + N + d.val - b.val) % N`.
 
@@ -28,34 +28,80 @@ offset-composition layer.
 namespace LeanGioia
 
 /--
-For values strictly below `N`, reducing the positive summand before a
-modular subtraction gives the same residue as reducing only at the end.
+Adding one full period before subtracting `b` gives the same residue as
+modular subtraction.
+
+This is the Nat-level representation lemma needed to connect `Fin N`
+subtraction with `relativeOverlapOffset`.
 -/
-theorem mod_add_sub_mod_eq
-    {N a b d : Nat}
+theorem mod_add_period_sub_eq
+    {N u b : Nat}
     (hN : 0 < N)
     (hb : b < N) :
-    (N - b + ((a + d) % N)) % N =
-      (a + N + d - b) % N := by
-
-  have hsplit :
-      a + d = (a + d) % N + N * ((a + d) / N) := by
+    ((u % N) + N - b) % N =
+      (u + N - b) % N := by
+  have hbN : b ≤ N := by
     omega
 
-  have hNb : N - b > 0 := by
-    omega
+  have hmod :
+      u % N < N :=
+    Nat.mod_lt u hN
 
-  have hrewrite :
-      a + N + d - b =
-        (N - b + ((a + d) % N)) +
-          N * ((a + d) / N) := by
-    omega
+  by_cases hub : b ≤ u % N
 
-  rw [hrewrite]
+  · have hleft :
+        (u % N + N - b) % N =
+          (u % N - b) % N := by
+      have heq :
+          u % N + N - b =
+            (u % N - b) + N := by
+        omega
+      rw [heq, Nat.add_mod]
+      simp
 
-  rw [Nat.add_mod]
+    have hright :
+        (u + N - b) % N =
+          (u % N - b) % N := by
+      have heq :
+          u + N - b =
+            (u - b) + N := by
+        omega
+      rw [heq, Nat.add_mod]
+      simp
 
-  simp
+      have hub' : b ≤ u := by
+        exact le_trans hub (Nat.mod_le u N)
+
+      have hsubmod :
+          (u - b) % N =
+            (u % N - b) % N := by
+        exact Nat.sub_mod_eq_sub_mod hub
+
+      exact hsubmod
+
+    rw [hleft, hright]
+
+  · have hbu : u % N < b := by
+      omega
+
+    have hleftRaw :
+        u % N + N - b < N := by
+      omega
+
+    have hleft :
+        (u % N + N - b) % N =
+          u % N + N - b := by
+      exact Nat.mod_eq_of_lt hleftRaw
+
+    rw [hleft]
+
+    have hperiod :
+        (u + N - b) % N =
+          (u % N + N - b) % N := by
+      omega
+
+    rw [hperiod]
+    exact (Nat.mod_eq_of_lt hleftRaw)
 
 /--
 The value of `a + d - b : Fin N` agrees with the explicit natural-number
@@ -66,20 +112,23 @@ theorem fin_add_sub_val_eq_relativeOverlapOffset
     (a + d - b).val =
       relativeOverlapOffset N a.val b.val d.val := by
 
-  have hN : 0 < N :=
-    Nat.pos_of_ne_zero (by
-      intro hN0
-      subst N
-      exact Fin.elim0 a)
+  have hN : 0 < N := by
+    exact Nat.zero_lt_of_lt a.2
 
   unfold relativeOverlapOffset
 
   rw [Fin.val_sub]
   rw [Fin.val_add]
 
-  exact mod_add_sub_mod_eq
-    hN
-    b.2
+  have hbridge :=
+    mod_add_period_sub_eq
+      (N := N)
+      (u := a.val + d.val)
+      (b := b.val)
+      hN
+      b.2
+
+  simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hbridge
 
 /--
 Checkpoint 30's representation bridge now holds.
