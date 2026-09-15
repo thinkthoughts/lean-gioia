@@ -1,4 +1,4 @@
-import LeanGioia.PeriodicOverlapContainment
+import LeanGioia.OverlapInteraction
 
 /-!
 # LeanGioia.CyclicOffset
