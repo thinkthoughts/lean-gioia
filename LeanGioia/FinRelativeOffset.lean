@@ -177,11 +177,36 @@ theorem zmod_relativeOverlapOffset_val
         (a.val + d.val) % N < N :=
       Nat.mod_lt _ (NeZero.pos N)
 
+        have hsum :
+        a.val + d.val =
+          N * ((a.val + d.val) / N) +
+            (a.val + d.val) % N := by
+      exact hdm.symm
+
+    have hsub :
+        a.val + d.val - b.val =
+          N * ((a.val + d.val) / N) +
+            ((a.val + d.val) % N - b.val) := by
+      rw [hsum]
+      omega
+
     have step1 :
         a.val + N + d.val - b.val =
           ((a.val + d.val) % N - b.val) +
-            N * ((a.val + d.val) / N + 1) := by
+            N * (((a.val + d.val) / N) + 1) := by
+      rw [Nat.add_assoc a.val N d.val]
+      rw [Nat.add_comm N d.val]
+      rw [← Nat.add_assoc a.val d.val N]
+      rw [Nat.add_sub_assoc (by omega : b.val ≤ a.val + d.val)]
+      rw [hsub]
       omega
+
+    have hlt2 :
+        (a.val + d.val) % N - b.val < N := by
+      omega
+
+    rw [step1, Nat.add_mul_mod_self_left]
+    exact (Nat.mod_eq_of_lt hlt2).symm
 
     have hlt2 :
         (a.val + d.val) % N - b.val < N := by
