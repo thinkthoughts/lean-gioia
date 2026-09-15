@@ -20,7 +20,7 @@ with the explicit natural-number cyclic residue
 The key point is to isolate the natural-number representation bridge
 from the `Fin N` arithmetic.  Modular normalization is handled by a
 small helper lemma rather than by expanding quotient/remainder
-expressions.
+expressions inline in the main theorem.
 -/
 
 namespace LeanGioia
@@ -28,6 +28,11 @@ namespace LeanGioia
 /--
 Adding a full modulus before subtracting `b` gives the same residue
 whether `u` is reduced modulo `N` first or afterward.
+
+Proved by introducing the `Nat.div_add_mod` witness for `u` once, up
+front, so the rest of the identity is pure linear arithmetic that
+`omega` can close directly — no case split, and no separate `% N`
+terms left for `omega` to relate on its own.
 -/
 theorem relative_mod_sub
     {N u b : Nat}
@@ -35,94 +40,11 @@ theorem relative_mod_sub
     (hb : b < N) :
     (N - b + u % N) % N =
       (u + N - b) % N := by
-  have hur : u % N < N :=
-    Nat.mod_lt u hN
-
-  by_cases h : b ≤ u % N
-
-  · have hleft :
-        N - b + u % N =
-          N + (u % N - b) := by
-      omega
-
-    rw [hleft, Nat.add_mod_left]
-
-    have hsmall :
-        u % N - b < N := by
-      omega
-
-    rw [Nat.mod_eq_of_lt hsmall]
-
-    have hu_mod :
-        u % N = u % N := rfl
-
-    have hright :
-        (u + N - b) % N =
-          (u % N - b) % N := by
-      calc
-        (u + N - b) % N
-            = ((u % N) + N - b) % N := by
-                rw [Nat.add_sub_assoc (Nat.le_add_left b u)]
-                rw [Nat.add_mod]
-                simp [hN]
-        _ = (N + (u % N - b)) % N := by
-              congr 1
-              omega
-        _ = (u % N - b) % N := by
-              rw [Nat.add_mod_left]
-
-    rw [hright]
-    exact (Nat.mod_eq_of_lt hsmall).symm
-
-  · have hlt : u % N < b := by
-      omega
-
-    have hleftRaw :
-        N - b + u % N < N := by
-      omega
-
-    rw [Nat.mod_eq_of_lt hleftRaw]
-
-    have hleftForm :
-        N - b + u % N =
-          N - (b - u % N) := by
-      omega
-
-    rw [hleftForm]
-
-    have huMod :
-        u % N = u % N := rfl
-
-    have hright :
-        (u + N - b) % N =
-          (N - (b - u % N)) % N := by
-      have hpos :
-          0 < b - u % N := by
-        omega
-
-      have hdiffLe :
-          b - u % N ≤ N := by
-        omega
-
-      have htargetLt :
-          N - (b - u % N) < N := by
-        omega
-
-      calc
-        (u + N - b) % N
-            = ((u % N) + N - b) % N := by
-                have hmod :
-                    (u + N - b) % N =
-                      ((u % N) + N - b) % N := by
-                  omega
-                exact hmod
-        _ = (N - (b - u % N)) % N := by
-              congr 1
-              omega
-        _ = N - (b - u % N) := by
-              exact Nat.mod_eq_of_lt htargetLt
-
-    exact hright.symm
+  have hdm : N * (u / N) + u % N = u := Nat.div_add_mod u N
+  have hkey :
+      u + N - b = (N - b + u % N) + N * (u / N) := by
+    omega
+  rw [hkey, Nat.add_mul_mod_self_left]
 
 /--
 The value of `a + d - b : Fin N` agrees with the explicit
