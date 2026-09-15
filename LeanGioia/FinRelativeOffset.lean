@@ -10,40 +10,83 @@ Checkpoint 29.
 Checkpoint 30 proved the group-level identity in `Fin N` and reduced the
 remaining work to `FinRelativeOffsetValueBridge N`.
 
-This file proves that bridge by normalizing the value of `a + d - b`
-against the explicit natural-number representative
+The value of `a + d - b : Fin N` normalizes to
+
+`(N - b.val + ((a.val + d.val) % N)) % N`.
+
+The target representation is
 
 `(a.val + N + d.val - b.val) % N`.
+
+This checkpoint proves their equality by splitting on the ordinary
+subtraction boundary `b.val ≤ a.val + d.val`.
 -/
 
 namespace LeanGioia
 
 /--
-The value of `a + d - b : Fin N` is the explicit natural-number residue
-used by `relativeOverlapOffset`.
+The value of `a + d - b : Fin N` agrees with the explicit natural-number
+residue used by `relativeOverlapOffset`.
 -/
 theorem fin_add_sub_val_eq_relativeOverlapOffset
     {N : Nat} (a b d : Fin N) :
     (a + d - b).val =
       relativeOverlapOffset N a.val b.val d.val := by
   have hN : 0 < N := by
-    exact Nat.pos_of_lt a.2
-  letI : NeZero N := ⟨Nat.ne_of_gt hN⟩
+    omega
+  haveI : NeZero N := ⟨Nat.ne_of_gt hN⟩
 
   unfold relativeOverlapOffset
   simp only [Fin.val_sub, Fin.val_add]
 
-  have hadd :
-      ((a.val + d.val) % N + N - b.val) % N =
-        (a.val + d.val + N - b.val) % N := by
-    omega
+  have ha : a.val < N := a.2
+  have hb : b.val < N := b.2
+  have hd : d.val < N := d.2
 
-  have hcomm :
-      a.val + d.val + N - b.val =
-        a.val + N + d.val - b.val := by
-    omega
+  by_cases hsum : a.val + d.val < N
 
-  rw [hadd, hcomm]
+  · rw [Nat.mod_eq_of_lt hsum]
+
+    have hraw :
+        N - b.val + (a.val + d.val) =
+          a.val + N + d.val - b.val := by
+      omega
+
+    rw [hraw]
+
+  · have hNle : N ≤ a.val + d.val := by
+      omega
+
+    have hsum2N :
+        a.val + d.val < 2 * N := by
+      omega
+
+    have hmod :
+        (a.val + d.val) % N =
+          a.val + d.val - N := by
+      rw [Nat.mod_eq_sub_mod hNle]
+      have hlt :
+          a.val + d.val - N < N := by
+        omega
+      exact Nat.mod_eq_of_lt hlt
+
+    rw [hmod]
+
+    have hleft :
+        N - b.val + (a.val + d.val - N) =
+          a.val + d.val - b.val := by
+      omega
+
+    rw [hleft]
+
+    have hright :
+        a.val + N + d.val - b.val =
+          N + (a.val + d.val - b.val) := by
+      omega
+
+    rw [hright]
+
+    simp
 
 /--
 Checkpoint 30's representation bridge now holds.
