@@ -8,27 +8,41 @@ Checkpoint 32: connect the closed canonical relative-offset geometry
 from Checkpoint 31 to the explicit cyclic blocks introduced in
 Checkpoint 23.
 
-The central geometric statement is formulated at the coordinate level:
-if a shared point belongs to both range-`R` cyclic blocks, and `x`
-belongs to the competing block, then the canonical relative coordinate
-of `x` lies in the forward-or-backward `3R` region supplied by
-`canonicalOverlapInThreeRRegion_closed`.
+Checkpoint 31 closed the representation bridge between the relative
+offset expression and arithmetic in `Fin N`.  The resulting theorem
+`canonicalOverlapInThreeRRegion_closed` says that canonical overlap
+coordinates place a point `x` in the forward-or-backward region
 
-This checkpoint deliberately keeps the final conversion from that
-canonical coordinate region to the one-sided `cyclicBlock N (3 * R)`
-containment separate. The distinction matters on a periodic chain:
-the canonical overlap theorem records both forward and backward
-representatives, while `cyclicBlock` is oriented from its start point.
+`cyclicOffset N start x < 2 * R`
 
-Thus CP32 closes the overlap-coordinate consequence of CP31 without
-silently strengthening it to a one-sided block-containment theorem.
+or
+
+`N - R ≤ cyclicOffset N start x`.
+
+This checkpoint supplies those canonical coordinates directly from
+periodic overlap data.
+
+If a shared point belongs to both range-`R` cyclic blocks and `x`
+belongs to the competing block, then the three cyclic offsets required
+by `CanonicalOverlapCoordinates` are all below `R`.  The closed
+Checkpoint-31 theorem therefore places `x` in `InThreeRCoverRegion`.
+
+The second theorem packages the shared point existentially, matching
+the form obtained from a nonempty intersection of two cyclic blocks.
+
+Thus CP32 closes the passage
+
+periodic block overlap
+→ canonical overlap coordinates
+→ forward-or-backward `3R` region.
 -/
 
 namespace LeanGioia
 
 /--
-A concrete shared point of two cyclic range-`R` blocks supplies the
-three offset bounds required by `CanonicalOverlapInThreeRRegion`.
+A concrete shared point of two cyclic range-`R` blocks supplies
+canonical overlap coordinates and hence places `x` in the
+forward-or-backward `3R` region.
 -/
 theorem canonical_overlap_coordinate_of_shared
     {N R : Nat}
@@ -40,17 +54,8 @@ theorem canonical_overlap_coordinate_of_shared
       shared ∈ cyclicBlock N R competitorStart)
     (hXCompetitor :
       x ∈ cyclicBlock N R competitorStart) :
-    relativeOverlapOffset
-        N
-        (cyclicOffset N start shared)
-        (cyclicOffset N competitorStart shared)
-        (cyclicOffset N competitorStart x) < 3 * R ∨
-      N - 3 * R <
-        relativeOverlapOffset
-          N
-          (cyclicOffset N start shared)
-          (cyclicOffset N competitorStart shared)
-          (cyclicOffset N competitorStart x) := by
+    InThreeRCoverRegion R start x := by
+
   have hRleN : R ≤ N := by
     omega
 
@@ -88,10 +93,10 @@ theorem canonical_overlap_coordinate_of_shared
 Checkpoint-32 coordinate theorem with the shared point packaged as an
 existential witness.
 
-This is the direct form produced from nonempty intersection data:
-once `shared` is chosen from both cyclic supports, every point `x` in
-the competing support has a canonical overlap coordinate in the
-forward-or-backward `3R` region.
+A nonempty intersection of the selected and competing range-`R`
+cyclic blocks supplies a shared point.  Every point `x` in the
+competing block then lies in the canonical forward-or-backward
+`3R` region relative to the selected start.
 -/
 theorem canonical_overlap_coordinate_of_intersection_witness
     {N R : Nat}
@@ -103,28 +108,10 @@ theorem canonical_overlap_coordinate_of_intersection_witness
         shared ∈ cyclicBlock N R competitorStart)
     (hXCompetitor :
       x ∈ cyclicBlock N R competitorStart) :
-    ∃ shared : Fin N,
-      shared ∈ cyclicBlock N R start ∧
-      shared ∈ cyclicBlock N R competitorStart ∧
-      (relativeOverlapOffset
-          N
-          (cyclicOffset N start shared)
-          (cyclicOffset N competitorStart shared)
-          (cyclicOffset N competitorStart x) < 3 * R ∨
-        N - 3 * R <
-          relativeOverlapOffset
-            N
-            (cyclicOffset N start shared)
-            (cyclicOffset N competitorStart shared)
-            (cyclicOffset N competitorStart x)) := by
+    InThreeRCoverRegion R start x := by
+
   rcases hShared with
     ⟨shared, hSharedStart, hSharedCompetitor⟩
-
-  refine
-    ⟨shared,
-      hSharedStart,
-      hSharedCompetitor,
-      ?_⟩
 
   exact
     canonical_overlap_coordinate_of_shared
