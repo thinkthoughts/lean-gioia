@@ -311,28 +311,4 @@ noncomputable def canonicalOverlapCoordinates_of_mem
       x_from_competitor_lt :=
         cyclicOffset_lt_of_mem_cyclicBlock hRleN hxc }
 
-/--
-Pointwise reduction of `OverlapOffsetBound`.
-
-To prove the global bound, it is now enough to prove the following pure
-cyclic-offset implication for the canonical coordinate data extracted
-above.
--/
-def CanonicalOverlapImpliesCover (N R : Nat) : Prop :=
-  ∀ (start x : Fin N),
-    CanonicalOverlapCoordinates N R start x →
-      InThreeRCoverByOffset R start x
-
-/--
-The canonical offset implication discharges `OverlapOffsetBound`.
--/
-theorem overlapOffsetBound_of_canonical
-    {N R : Nat}
-    (hNR : 3 * R < N)
-    (hcanon : CanonicalOverlapImpliesCover N R) :
-    OverlapOffsetBound N R := by
-  intro start x hx
-  exact hcanon start x
-    (canonicalOverlapCoordinates_of_mem hNR hx)
-
 end LeanGioia
