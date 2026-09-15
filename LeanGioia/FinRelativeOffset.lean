@@ -169,7 +169,7 @@ theorem zmod_relativeOverlapOffset_val
       omega
 
     have hnormalize :
-        (a.val + d.val + N - b.val) % N =
+        (a.val + N + d.val - b.val) % N =
           ((a.val + d.val) % N - b.val) % N := by
       omega
 
@@ -217,7 +217,7 @@ theorem zmod_relativeOverlapOffset_val
     rw [Nat.mod_eq_of_lt hraw]
 
     have hnormalize :
-        (a.val + d.val + N - b.val) % N =
+        (a.val + N + d.val - b.val) % N =
           (a.val + d.val) % N + (N - b.val) := by
       omega
 
