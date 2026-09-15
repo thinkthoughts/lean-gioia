@@ -36,7 +36,7 @@ terms left for `omega` to relate on its own.
 -/
 theorem relative_mod_sub
     {N u b : Nat}
-    (hN : 0 < N)
+    (_hN : 0 < N)
     (hb : b < N) :
     (N - b + u % N) % N =
       (u + N - b) % N := by
