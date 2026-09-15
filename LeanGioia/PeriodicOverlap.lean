@@ -77,6 +77,7 @@ theorem canonical_overlap_coordinate_of_shared
 
   exact
     canonicalOverlapInThreeRRegion_closed hNR
+      start competitorStart shared x
       hStart hCompetitorShared hCompetitorX
 
 /--
