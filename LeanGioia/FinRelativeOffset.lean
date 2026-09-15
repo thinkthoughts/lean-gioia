@@ -17,75 +17,112 @@ with the explicit natural-number cyclic residue
 
 `(a.val + N + d.val - b.val) % N`.
 
-The key arithmetic fact is isolated first: reducing `a + d` modulo `N`
-before taking the cyclic difference from `b` gives the same residue as
-forming the unreduced natural-number expression and reducing once at
-the end.
+The key point is to isolate the natural-number representation bridge
+from the `Fin N` arithmetic.  Modular normalization is handled by a
+small helper lemma rather than by expanding quotient/remainder
+expressions.
 -/
 
 namespace LeanGioia
 
 /--
-Adding a multiple of `N` to the left argument does not change the
-remainder modulo `N`.
+Adding a full modulus before subtracting `b` gives the same residue
+whether `u` is reduced modulo `N` first or afterward.
 -/
-theorem add_mul_mod_eq_mod
-    (x q N : Nat) :
-    (x + N * q) % N = x % N := by
-  rw [Nat.add_mul_mod_self_left]
-
-/--
-Normalize the natural-number encoding of a cyclic difference.
-
-For `b < N`, reducing `u` modulo `N` before forming the cyclic
-difference from `b` gives the same residue as forming the difference
-from `u` first and reducing afterward.
--/
-theorem relativeOffset_mod_normalize
+theorem relative_mod_sub
     {N u b : Nat}
     (hN : 0 < N)
     (hb : b < N) :
-    (u % N + N - b) % N =
+    (N - b + u % N) % N =
       (u + N - b) % N := by
-  have hdecomp :
-      u = u % N + N * (u / N) := by
-    exact (Nat.mod_add_div u N).symm
+  have hur : u % N < N :=
+    Nat.mod_lt u hN
 
-  by_cases hbu : b ≤ u % N
+  by_cases h : b ≤ u % N
 
   · have hleft :
-        u % N + N - b =
-          (u % N - b) + N := by
+        N - b + u % N =
+          N + (u % N - b) := by
       omega
+
+    rw [hleft, Nat.add_mod_left]
+
+    have hsmall :
+        u % N - b < N := by
+      omega
+
+    rw [Nat.mod_eq_of_lt hsmall]
+
+    have hu_mod :
+        u % N = u % N := rfl
 
     have hright :
-        u + N - b =
-          (u % N - b) + N * (u / N + 1) := by
-      rw [hdecomp]
+        (u + N - b) % N =
+          (u % N - b) % N := by
+      calc
+        (u + N - b) % N
+            = ((u % N) + N - b) % N := by
+                rw [Nat.add_sub_assoc (Nat.le_add_left b u)]
+                rw [Nat.add_mod]
+                simp [hN]
+        _ = (N + (u % N - b)) % N := by
+              congr 1
+              omega
+        _ = (u % N - b) % N := by
+              rw [Nat.add_mod_left]
+
+    rw [hright]
+    exact (Nat.mod_eq_of_lt hsmall).symm
+
+  · have hlt : u % N < b := by
       omega
 
-    rw [hleft, hright]
-    rw [Nat.add_mod]
-    rw [Nat.mul_mod]
-    simp
-
-  · have hbu' :
-        u % N < b := by
+    have hleftRaw :
+        N - b + u % N < N := by
       omega
 
-    have hleft :
-        u % N + N - b =
+    rw [Nat.mod_eq_of_lt hleftRaw]
+
+    have hleftForm :
+        N - b + u % N =
           N - (b - u % N) := by
       omega
 
-    have hright :
-        u + N - b =
-          (N - (b - u % N)) + N * (u / N) := by
-      rw [hdecomp]
-      omega
+    rw [hleftForm]
 
-    rw [hleft, hright]
-    rw [Nat.add_mul_mod_self_left]
+    have huMod :
+        u % N = u % N := rfl
+
+    have hright :
+        (u + N - b) % N =
+          (N - (b - u % N)) % N := by
+      have hpos :
+          0 < b - u % N := by
+        omega
+
+      have hdiffLe :
+          b - u % N ≤ N := by
+        omega
+
+      have htargetLt :
+          N - (b - u % N) < N := by
+        omega
+
+      calc
+        (u + N - b) % N
+            = ((u % N) + N - b) % N := by
+                have hmod :
+                    (u + N - b) % N =
+                      ((u % N) + N - b) % N := by
+                  omega
+                exact hmod
+        _ = (N - (b - u % N)) % N := by
+              congr 1
+              omega
+        _ = N - (b - u % N) := by
+              exact Nat.mod_eq_of_lt htargetLt
+
+    exact hright.symm
 
 /--
 The value of `a + d - b : Fin N` agrees with the explicit
@@ -97,21 +134,23 @@ theorem fin_add_sub_val_eq_relativeOverlapOffset
       relativeOverlapOffset N a.val b.val d.val := by
   unfold relativeOverlapOffset
 
-  have hN :
-      0 < N := by
-    exact Nat.zero_lt_of_lt a.2
-
-  have hnormalize :
-      ((a.val + d.val) % N + N - b.val) % N =
-        (a.val + d.val + N - b.val) % N := by
-    exact relativeOffset_mod_normalize hN b.2
+  have hN : 0 < N :=
+    Nat.zero_lt_of_lt a.2
 
   simp only [Fin.val_sub, Fin.val_add]
 
-  rw [hnormalize]
+  have hbridge :
+      (N - b.val + (a.val + d.val) % N) % N =
+        (a.val + d.val + N - b.val) % N := by
+    exact relative_mod_sub hN b.2
 
-  congr 1
-  omega
+  calc
+    (N - b.val + (a.val + d.val) % N) % N
+        = (a.val + d.val + N - b.val) % N :=
+          hbridge
+    _ = (a.val + N + d.val - b.val) % N := by
+          congr 1
+          omega
 
 /--
 Checkpoint 30's representation bridge now holds.
