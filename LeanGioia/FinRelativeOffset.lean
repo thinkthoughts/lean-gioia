@@ -22,7 +22,10 @@ The proof passes through `ZMod N`, where subtraction is genuine modular
 subtraction.  The only case split is the canonical representative split:
 whether the representative of `a + d` lies before or after `b`.
 
-This avoids asking `omega` to normalize modular arithmetic.
+`omega` cannot see through `% N` for a *variable* `N`, so every step
+that needs a modular fact is routed through `Nat.div_add_mod` and named
+`Nat` mod lemmas explicitly, rather than asked to normalize modular
+arithmetic on its own.
 -/
 
 namespace LeanGioia
@@ -64,7 +67,8 @@ theorem zmod_fin_add_sub_val
   by_cases h :
       b.val ≤ (a + d).val
 
-  · have hb :
+  · -- b.val ≤ (a + d).val: plain truncated subtraction on both sides.
+    have hb :
         (b.val : ZMod N).val = b.val :=
       zmod_val_of_fin b
 
@@ -76,12 +80,24 @@ theorem zmod_fin_add_sub_val
 
     rw [ZMod.val_sub hz]
     rw [hadd, hb]
+    rw [Fin.val_sub]
+    -- Goal: (a + d).val - b.val = (N - b.val + (a + d).val) % N
 
-    simp only [Fin.val_sub]
+    have hadN : (a + d).val < N := (a + d).2
 
-    rw [if_pos h]
+    have hsum :
+        N - b.val + (a + d).val = N + ((a + d).val - b.val) := by
+      omega
 
-  · have hlt :
+    have hlt' :
+        (a + d).val - b.val < N := by
+      omega
+
+    rw [hsum, Nat.add_mod_left]
+    exact (Nat.mod_eq_of_lt hlt').symm
+
+  · -- ¬ b.val ≤ (a + d).val: subtraction wraps around via `-b`.
+    have hlt :
         (a + d).val < b.val := by
       omega
 
@@ -93,34 +109,22 @@ theorem zmod_fin_add_sub_val
         (b.val : ZMod N) ≠ 0 := by
       intro hz
       have hzval := congrArg ZMod.val hz
-      rw [hb] at hzval
-      simp at hzval
+      rw [hb, ZMod.val_zero] at hzval
       omega
 
     have hneg :
         (-(b.val : ZMod N)).val =
           N - b.val := by
-      let hbNZ : NeZero (b.val : ZMod N) := ⟨hb0⟩
-      letI : NeZero (b.val : ZMod N) := hbNZ
+      haveI : NeZero (b.val : ZMod N) := ⟨hb0⟩
       simpa [hb] using
         (ZMod.val_neg_of_ne_zero (b.val : ZMod N))
 
     rw [sub_eq_add_neg]
     rw [ZMod.val_add]
     rw [hadd, hneg]
-
-    simp only [Fin.val_sub]
-
-    rw [if_neg (by omega : ¬ b.val ≤ (a + d).val)]
-
-    have hraw :
-        (a + d).val + (N - b.val) < N := by
-      have hbN : b.val < N := b.2
-      omega
-
-    rw [Nat.mod_eq_of_lt hraw]
-
-    omega
+    rw [Fin.val_sub]
+    -- Goal: ((a+d).val + (N - b.val)) % N = (N - b.val + (a+d).val) % N
+    rw [Nat.add_comm (a + d).val (N - b.val)]
 
 /--
 The explicit natural-number residue used by `relativeOverlapOffset`
@@ -159,22 +163,32 @@ theorem zmod_relativeOverlapOffset_val
       rfl
 
     rw [haddVal]
+    -- Goal: (a.val + d.val) % N - b.val = (a.val + N + d.val - b.val) % N
 
-    have hmodlt :
+    have hRb :
+        b.val ≤ (a.val + d.val) % N := by
+      omega
+
+    have hdm :
+        N * ((a.val + d.val) / N) + (a.val + d.val) % N = a.val + d.val :=
+      Nat.div_add_mod (a.val + d.val) N
+
+    have hRlt :
         (a.val + d.val) % N < N :=
       Nat.mod_lt _ (NeZero.pos N)
 
-    have hleft :
+    have step1 :
+        a.val + N + d.val - b.val =
+          ((a.val + d.val) % N - b.val) +
+            N * ((a.val + d.val) / N + 1) := by
+      omega
+
+    have hlt2 :
         (a.val + d.val) % N - b.val < N := by
       omega
 
-    have hnormalize :
-        (a.val + N + d.val - b.val) % N =
-          ((a.val + d.val) % N - b.val) % N := by
-      omega
-
-    rw [hnormalize]
-    exact (Nat.mod_eq_of_lt hleft).symm
+    rw [step1, Nat.add_mul_mod_self_left]
+    exact (Nat.mod_eq_of_lt hlt2).symm
 
   · have hlt :
         (a + d).val < b.val := by
@@ -184,15 +198,13 @@ theorem zmod_relativeOverlapOffset_val
         (b.val : ZMod N) ≠ 0 := by
       intro hz
       have hzval := congrArg ZMod.val hz
-      rw [hb] at hzval
-      simp at hzval
+      rw [hb, ZMod.val_zero] at hzval
       omega
 
     have hneg :
         (-(b.val : ZMod N)).val =
           N - b.val := by
-      let hbNZ : NeZero (b.val : ZMod N) := ⟨hb0⟩
-      letI : NeZero (b.val : ZMod N) := hbNZ
+      haveI : NeZero (b.val : ZMod N) := ⟨hb0⟩
       simpa [hb] using
         (ZMod.val_neg_of_ne_zero (b.val : ZMod N))
 
@@ -205,23 +217,22 @@ theorem zmod_relativeOverlapOffset_val
       rfl
 
     rw [haddVal]
+    -- Goal: ((a.val + d.val) % N + (N - b.val)) % N
+    --         = (a.val + N + d.val - b.val) % N
 
-    have hmodlt :
-        (a.val + d.val) % N < N :=
-      Nat.mod_lt _ (NeZero.pos N)
+    have hbN : b.val < N := b.2
 
-    have hraw :
-        (a.val + d.val) % N + (N - b.val) < N := by
+    have hdm :
+        N * ((a.val + d.val) / N) + (a.val + d.val) % N = a.val + d.val :=
+      Nat.div_add_mod (a.val + d.val) N
+
+    have step1 :
+        a.val + N + d.val - b.val =
+          ((a.val + d.val) % N + (N - b.val)) +
+            N * ((a.val + d.val) / N) := by
       omega
 
-    rw [Nat.mod_eq_of_lt hraw]
-
-    have hnormalize :
-        (a.val + N + d.val - b.val) % N =
-          (a.val + d.val) % N + (N - b.val) := by
-      omega
-
-    exact hnormalize.symm
+    rw [step1, Nat.add_mul_mod_self_left]
 
 /--
 The value of `a + d - b : Fin N` agrees with the explicit
