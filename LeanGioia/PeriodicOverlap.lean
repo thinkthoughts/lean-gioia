@@ -16,7 +16,7 @@ of `x` lies in the forward-or-backward `3R` region supplied by
 
 This checkpoint deliberately keeps the final conversion from that
 canonical coordinate region to the one-sided `cyclicBlock N (3 * R)`
-containment separate.  The distinction matters on a periodic chain:
+containment separate. The distinction matters on a periodic chain:
 the canonical overlap theorem records both forward and backward
 representatives, while `cyclicBlock` is oriented from its start point.
 
@@ -51,34 +51,38 @@ theorem canonical_overlap_coordinate_of_shared
           (cyclicOffset N start shared)
           (cyclicOffset N competitorStart shared)
           (cyclicOffset N competitorStart x) := by
+  have hRleN : R ≤ N := by
+    omega
+
   have hStart :
       cyclicOffset N start shared < R :=
     cyclicOffset_lt_of_mem_cyclicBlock
-      (Nat.le_of_lt (lt_of_le_of_lt
-        (Nat.le_mul_of_pos_left R (by omega : 0 < 3))
-        hNR))
+      hRleN
       hSharedStart
 
   have hCompetitorShared :
       cyclicOffset N competitorStart shared < R :=
     cyclicOffset_lt_of_mem_cyclicBlock
-      (Nat.le_of_lt (lt_of_le_of_lt
-        (Nat.le_mul_of_pos_left R (by omega : 0 < 3))
-        hNR))
+      hRleN
       hSharedCompetitor
 
   have hCompetitorX :
       cyclicOffset N competitorStart x < R :=
     cyclicOffset_lt_of_mem_cyclicBlock
-      (Nat.le_of_lt (lt_of_le_of_lt
-        (Nat.le_mul_of_pos_left R (by omega : 0 < 3))
-        hNR))
+      hRleN
       hXCompetitor
+
+  have hcoords :
+      CanonicalOverlapCoordinates N R start x :=
+    { competitorStart := competitorStart
+      shared := shared
+      shared_from_selected_lt := hStart
+      shared_from_competitor_lt := hCompetitorShared
+      x_from_competitor_lt := hCompetitorX }
 
   exact
     canonicalOverlapInThreeRRegion_closed hNR
-      start competitorStart shared x
-      hStart hCompetitorShared hCompetitorX
+      start x hcoords
 
 /--
 Checkpoint-32 coordinate theorem with the shared point packaged as an
@@ -113,8 +117,15 @@ theorem canonical_overlap_coordinate_of_intersection_witness
             (cyclicOffset N start shared)
             (cyclicOffset N competitorStart shared)
             (cyclicOffset N competitorStart x)) := by
-  rcases hShared with ⟨shared, hSharedStart, hSharedCompetitor⟩
-  refine ⟨shared, hSharedStart, hSharedCompetitor, ?_⟩
+  rcases hShared with
+    ⟨shared, hSharedStart, hSharedCompetitor⟩
+
+  refine
+    ⟨shared,
+      hSharedStart,
+      hSharedCompetitor,
+      ?_⟩
+
   exact
     canonical_overlap_coordinate_of_shared
       hNR
