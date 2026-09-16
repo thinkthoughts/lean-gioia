@@ -107,7 +107,8 @@ theorem mem_backwardBlock_of_cyclicOffset_ge
       omega
     rw [hbase]
     rw [Nat.add_mod]
-    simp only [Nat.mod_eq_of_lt hdN]
+    rw [Nat.mod_mod]
+    rw [Nat.mod_eq_of_lt hdN]
 
   rw [hmod]
 
