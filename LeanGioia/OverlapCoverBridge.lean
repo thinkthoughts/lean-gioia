@@ -101,12 +101,13 @@ theorem mem_backwardBlock_of_cyclicOffset_ge
   have hmod :
       ((start.1 + N - R) % N + d) % N =
         (start.1 + (N - R) + d) % N := by
+    have hbase :
+        start.1 + N - R =
+          start.1 + (N - R) := by
+      omega
+    rw [hbase]
     rw [Nat.add_mod]
-    rw [Nat.mod_eq_of_lt hdN]
-    rw [Nat.mod_mod]
-    rw [← Nat.add_mod]
-    congr 1
-    omega
+    simp only [Nat.mod_eq_of_lt hdN]
 
   rw [hmod]
 
