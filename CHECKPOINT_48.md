@@ -2,54 +2,60 @@
 
 ## Status
 
-**Target:** prove the representation-semantics fact deliberately left open by
-CP47: under `List.Nodup`, equal finite creator support gives equal
-`creationString` operators.
+**Target:** close the representation-semantics boundary left open by CP47.
 
 **Artifact:** `LeanGioia/CreationStringSupport.lean`
 
-**Checkpoint type:** focused representation-semantics checkpoint.
+**Checkpoint type:** focused representation-invariance checkpoint.
 
-CP48 is not a new end-to-end Corollary-1 theorem and does not yet remove the
-existing higher-family injectivity hypothesis.
+CP48 proves that, for duplicate-free creator lists, finite creator support
+specifies the corresponding `creationString` operator.
 
-## Why CP48 follows CP47
+It does **not** yet regroup the higher-creation family operator or remove the
+existing creator-support injectivity hypothesis.
 
-CP47 introduced the support fiber
+## Reading point from CP47
+
+CP47 introduced
 
 ```lean
 higherCreationSupportFiber creators S
 ```
 
-and aggregate coefficient
+and
 
 ```lean
 higherCreationAggregateCoeff coeff creators S
 ```
 
-for external higher-family indices sharing the same finite creator support.
+for external higher-family indices sharing one finite creator support.
 
-That checkpoint intentionally stopped before treating
-
-```lean
-(creators i).toFinset = (creators j).toFinset
-```
-
-as sufficient to identify their operators.  The missing statement was:
+That construction was intentionally only bookkeeping until the following
+semantic implication was proved:
 
 ```text
-same finite creator support
-        +
-duplicate-free creator lists
+xs.Nodup
+ys.Nodup
+xs.toFinset = ys.toFinset
         ↓
-same creationString operator
+creationString xs = creationString ys
 ```
 
-CP48 isolates and proves that semantic bridge.
+CP48 proves exactly this implication.
 
-## Existing definition used
+## Concrete source semantics
 
-The repository defines creation strings recursively:
+The repository defines
+
+```lean
+def setBit (b : Bitstring N) (j : Fin N) (v : Bool) : Bitstring N :=
+  Function.update b j v
+```
+
+and the hard-core creation operator reads the target bit and, where occupied,
+evaluates the state after setting that bit to `false`.
+
+Creation strings are recursively composed:
 
 ```lean
 def creationString : List (Fin N) → Operator N
@@ -57,77 +63,149 @@ def creationString : List (Fin N) → Operator N
   | j :: js => composeOperator (createAt j) (creationString js)
 ```
 
-Thus equal `toFinset` support is not definitionally equal to equal
-`creationString`: list order remains visible in the syntax.  A commutation
-argument is required.
+Thus support invariance is not definitional.  It requires a proof that
+distinct-site creation operations commute.
 
-## Proof ladder
-
-CP48 uses the following route:
+## CP48 proof ladder
 
 ```text
-distinct sites j ≠ k
+Function.update_comm
         ↓
-createAt j and createAt k commute
+setBit_comm
         ↓
-adjacent distinct creators may be swapped
+distinct-site createAt commutation
         ↓
-Nodup + List.Perm
+adjacent creationString swap
         ↓
-creationString permutation invariance
+List.Perm invariance under Nodup
         ↓
-Nodup xs + Nodup ys + xs.toFinset = ys.toFinset
+Nodup + equal toFinset
         ↓
-creationString xs = creationString ys
+creationString equality
 ```
 
-The final theorem is intended to be:
+## New lemmas
+
+### `setBit_comm`
+
+For `j ≠ k`:
+
+```lean
+setBit (setBit b j v) k w =
+  setBit (setBit b k w) j v
+```
+
+This is the repository-level wrapper around `Function.update_comm`.
+
+### `setBit_apply_of_ne`
+
+For `j ≠ k`:
+
+```lean
+setBit b j v k = b k
+```
+
+This makes the distinct-coordinate reading fact explicit for the
+`createAt` proof.
+
+### `createAt_comp_comm_of_ne`
+
+For distinct sites:
+
+```lean
+composeOperator (createAt j) (createAt k) =
+  composeOperator (createAt k) (createAt j)
+```
+
+This is the local hard-core creation semantic fact needed by the remainder of
+the checkpoint.
+
+### `composeOperator_assoc`
+
+The repository's `composeOperator` is associative.
+
+This is packaged locally so the adjacent-swap proof does not depend on an
+unrelated composition rewrite API.
+
+### `creationString_swap_adjacent`
+
+Distinct adjacent creator sites may be exchanged without changing the
+creation-string operator.
+
+### `creationString_eq_of_perm_of_nodup`
+
+A permutation of a duplicate-free creator list determines the same
+creation-string operator.
+
+### `creationString_eq_of_toFinset_eq`
+
+The checkpoint endpoint:
 
 ```lean
 theorem creationString_eq_of_toFinset_eq
-    {xs ys : List (Fin N)}
     (hx : xs.Nodup)
     (hy : ys.Nodup)
     (hsupport : xs.toFinset = ys.toFinset) :
     creationString xs = creationString ys
 ```
 
-## What CP48 closes
+The final list-theoretic bridge uses the available mathlib theorem
 
-CP48 closes the representation warning recorded in CP47:
-
-```text
-equal List.toFinset support
+```lean
+List.perm_of_nodup_nodup_toFinset_eq
 ```
 
-may now be used to identify the corresponding `creationString` operators,
-provided both creator lists satisfy `Nodup`.
+rather than introducing a new representation assumption.
 
-This is exactly the semantic fact needed before a higher-creation family can
-safely be regrouped by finite creator support.
+## What CP48 closes
+
+Before CP48:
+
+```text
+equal support
+    ↓
+same external support class
+```
+
+was established by CP47, but identifying the corresponding operators remained
+open.
+
+After CP48:
+
+```text
+equal support + Nodup
+        ↓
+same creationString operator
+```
+
+is kernel-visible once this checkpoint passes.
+
+This makes `Finset (Fin N)` support an admissible canonical key for
+duplicate-free creation strings.
 
 ## What CP48 deliberately leaves open
 
 CP48 does **not** yet:
 
-- rewrite `higherCreationFamilyOperator` as a sum over support fibers;
-- prove that the support-fiber aggregate coefficient is the observable
-  coefficient of the regrouped operator;
+- regroup `higherCreationFamilyOperator` by support fibers;
+- prove an operator identity involving `higherCreationAggregateCoeff`;
+- replace individual higher-family coefficients by aggregate coefficients in
+  Table-I Row 1;
 - remove `hinj` from the existing coefficient-isolation theorem;
-- claim that individual duplicate external coefficients vanish;
-- modify the CP44/CP45 end-to-end Corollary-1 theorem.
+- modify the CP44/CP45 end-to-end theorem.
 
-Those are later aggregation and theorem-replacement steps.
+Those are aggregation and theorem-reduction steps that now have a justified
+representation invariant to build on.
 
 ## Verification
 
-First make sure the imported CP47 module has a Lake object:
+Make sure CP47 has a Lake-built object:
 
 ```bash
 lake build LeanGioia.HigherCreationSupportFiber
 ```
 
-Then check CP48 directly:
+Then:
 
 ```bash
 lake env lean LeanGioia/CreationStringSupport.lean
@@ -135,7 +213,7 @@ lake env lean LeanGioia/CreationStringSupport.lean
 
 A silent return to the shell prompt is the CP48 file-level PASS reading point.
 
-If successful, build its object for the next checkpoint:
+After a file-level pass:
 
 ```bash
 lake build LeanGioia.CreationStringSupport
@@ -143,29 +221,45 @@ lake build LeanGioia.CreationStringSupport
 
 ## Failure discipline
 
-The first theorem is intentionally the local `createAt` commutation result.
-If the current `createAt` implementation exposes a mismatch in simplification
-or operator-composition syntax, stop at that theorem and repair the local proof
-rather than weakening or assuming the final support-invariance result.
+If CP48 fails, repair the smallest failing lemma rather than weakening the
+checkpoint endpoint.
 
-Likewise, if the installed mathlib uses a different name for the standard
-`Nodup` + equal-`toFinset` → `List.Perm` lemma, resolve that library interface
-locally.  Do not replace the missing step with an axiom or assumption.
+In particular:
 
-## Next reading point
+- failures in `createAt_comp_comm_of_ne` are local bit-update proof issues;
+- failures in `creationString_swap_adjacent` are composition-rewrite issues;
+- failures in `creationString_eq_of_perm_of_nodup` are `List.Perm` induction
+  interface issues;
+- the final support theorem should remain unchanged unless the preceding
+  semantic lemmas reveal a genuine counterexample.
 
-After CP48 passes, CP49 can return to the CP47 support fibers and prove the
-actual operator regrouping step:
+No axiom or additional representation hypothesis should be introduced to make
+the endpoint pass.
+
+## CP49 target
+
+Once CP48 passes, CP49 can use CP47 + CP48 together to prove the first actual
+support-regrouping result:
 
 ```text
 external higher-family sum
         ↓
-partition by finite creator support
+group indices by creator support
         ↓
-aggregate coefficient on each support
+equal-support creationString terms identified by CP48
         ↓
-support-indexed higher-creation operator
+sum coefficients within each support fiber
+        ↓
+support-aggregated operator representation
 ```
 
-Only after that regrouping theorem is kernel-checked should we attempt to
+Only after that operator identity is kernel-checked should the repo attempt to
 replace the existing `hinj` premise in the higher-creation coefficient route.
+
+## Checkpoint result
+
+**CP48 target:** duplicate-free `creationString` operators are determined by
+finite creator support.
+
+The CP44/CP45 injective route remains the verified end-to-end baseline while
+this representation reduction proceeds.
