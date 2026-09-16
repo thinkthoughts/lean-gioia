@@ -9,9 +9,7 @@ into the explicit offset certificate used by the periodic-overlap
 containment machinery.
 
 Checkpoint 33 proved that every point of the exact overlap hull lies in
-
 `InThreeRCoverRegion R start x`,
-
 meaning that its canonical cyclic offset from `start` is either
 
 * forward: `cyclicOffset N start x < 2 * R`, or
@@ -20,14 +18,12 @@ meaning that its canonical cyclic offset from `start` is either
 The forward branch directly supplies `IsForwardOffset`.
 
 For the backward branch, the canonical offset lies in the final `R`
-positions of the periodic chain.  Moving the block start backward by
+positions of the periodic chain. Moving the block start backward by
 `R` therefore gives an offset below `R` from
 `cyclicBackStart N R start`.
 
 This closes the representation bridge
-
 `InThreeRCoverRegion → InThreeRCoverByOffset`
-
 and, together with Checkpoint 33, discharges `OverlapOffsetBound`.
 -/
 
@@ -99,10 +95,18 @@ theorem mem_backwardBlock_of_cyclicOffset_ge
 
   have hstart : start.1 < N := start.2
 
+  have hdN : d < N := by
+    omega
+
   have hmod :
       ((start.1 + N - R) % N + d) % N =
         (start.1 + (N - R) + d) % N := by
     rw [Nat.add_mod]
+    rw [Nat.mod_eq_of_lt hdN]
+    rw [Nat.mod_mod]
+    rw [← Nat.add_mod]
+    congr 1
+    omega
 
   rw [hmod]
 
@@ -155,8 +159,9 @@ theorem inThreeRCoverByOffset_of_inThreeRCoverRegion
     exact isForwardOffset_of_cyclicOffset_lt hfwd
 
   · right
-    exact isStrictBackwardOffset_of_cyclicOffset_ge
-      hNR hbwd
+    exact
+      isStrictBackwardOffset_of_cyclicOffset_ge
+        hNR hbwd
 
 /--
 Checkpoint-34 closure theorem.
