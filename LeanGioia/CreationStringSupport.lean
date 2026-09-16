@@ -49,7 +49,7 @@ theorem setBit_apply_of_ne
     (v : Bool)
     (hjk : j ≠ k) :
     setBit b j v k = b k := by
-  simp [setBit, Function.update_apply, hjk.symm]
+  simp [setBit, hjk.symm]
 
 /--
 Hard-core creation operators at distinct sites commute.
@@ -127,8 +127,12 @@ theorem creationString_eq_of_perm_of_nodup
       simp only [creationString]
       rw [ih htail]
   | @swap x y l =>
+      have hy_not_mem : y ∉ x :: l :=
+        (List.nodup_cons.mp hx).1
       have hxy : x ≠ y := by
-        exact (List.nodup_cons.mp hx).1
+        intro hxy
+        apply hy_not_mem
+        simp [hxy]
       exact (creationString_swap_adjacent x y l hxy).symm
   | @trans l₁ l₂ l₃ h₁ h₂ ih₁ ih₂ =>
       have hmid : l₂.Nodup := hx.perm h₁
