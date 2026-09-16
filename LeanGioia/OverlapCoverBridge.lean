@@ -62,27 +62,22 @@ theorem mem_backwardBlock_of_cyclicOffset_ge
   have hRmod : R % N = R :=
     Nat.mod_eq_of_lt hRltN
 
-  have hstart : start.1 < N := start.2
+  have hNpos : 0 < N := by
+    omega
 
   have hofflt :
       cyclicOffset N start x < N :=
     cyclicOffset_lt start x
 
-  have hbackStartVal :
-      (cyclicBackStart N R start).1 =
-        (start.1 + N - R) % N := by
-    unfold cyclicBackStart
-    simp [hRmod]
+  let d :=
+    cyclicOffset N start x - (N - R)
 
-  have hcandidate :
-      cyclicOffset N start x - (N - R) < R := by
+  have hd : d < R := by
+    dsimp [d]
     omega
 
-  apply mem_cyclicBlock_of_cyclicOffset_lt
-
-  unfold cyclicOffset
-
-  rw [hbackStartVal]
+  apply mem_cyclicBlock_iff.mpr
+  refine ⟨d, hd, ?_⟩
 
   have hxspec :
       x.1 =
@@ -91,12 +86,27 @@ theorem mem_backwardBlock_of_cyclicOffset_ge
 
   rw [hxspec]
 
-  have hNpos : 0 < N := by
+  have hoff :
+      cyclicOffset N start x =
+        (N - R) + d := by
+    dsimp [d]
     omega
 
-  have hRleN : R ≤ N := by
-    omega
+  rw [hoff]
 
+  unfold cyclicBackStart
+  simp only [hRmod]
+
+  have hstart : start.1 < N := start.2
+
+  have hmod :
+      ((start.1 + N - R) % N + d) % N =
+        (start.1 + (N - R) + d) % N := by
+    rw [Nat.add_mod]
+
+  rw [hmod]
+
+  congr 1
   omega
 
 /--
