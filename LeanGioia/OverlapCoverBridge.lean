@@ -106,9 +106,8 @@ theorem mem_backwardBlock_of_cyclicOffset_ge
           start.1 + (N - R) := by
       omega
     rw [hbase]
-    rw [Nat.add_mod]
-    rw [Nat.mod_mod]
-    rw [Nat.mod_eq_of_lt hdN]
+    simpa [Nat.mod_eq_of_lt hdN] using
+      (Nat.add_mod (start.1 + (N - R)) d N).symm
 
   rw [hmod]
 
