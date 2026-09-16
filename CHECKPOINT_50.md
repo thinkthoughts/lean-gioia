@@ -11,6 +11,8 @@ coefficient isolation with support-fiber aggregate coefficient isolation.
 
 CP50 is the **reduced higher-creation coefficient checkpoint**.
 
+`HigherCreationAggregateZero.lean` imports `TableIRowOne` directly because `HigherCreationWitnessData` is defined there.
+
 ## Why CP50 exists
 
 The pre-CP50 proof route was:

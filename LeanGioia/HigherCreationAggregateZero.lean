@@ -1,4 +1,5 @@
 import LeanGioia.HigherCreationSupportAggregation
+import LeanGioia.TableIRowOne
 
 /-!
 # LeanGioia.HigherCreationAggregateZero
@@ -86,30 +87,56 @@ theorem higherCreationFamilyOperator_selected_witness_aggregate
   rw [higherCreationFamilyOperator]
   simp only [Finset.sum_apply, LinearMap.sum_apply, LinearMap.smul_apply,
     Pi.smul_apply, smul_eq_mul]
-  rw [← Finset.sum_filter]
-  · calc
+  let S : Finset (Fin N) := (creators i₀).toFinset
+  let f : ι → ℂ := fun i =>
+    coeff i *
+      creationString (creators i) (wState N)
+        (higherCreationWitnessBits (creators i₀) l)
+  rw [← Finset.sum_filter_add_sum_filter_not
+    (Finset.univ : Finset ι) (fun i => (creators i).toFinset = S) f]
+  have hout :
+      ∑ i ∈ (Finset.univ.filter
+          (fun i => ¬ (creators i).toFinset = S)),
+        f i = 0 := by
+    apply Finset.sum_eq_zero
+    intro i hi
+    have hnot : (creators i).toFinset ≠ S := by
+      simpa using (Finset.mem_filter.mp hi).2
+    have hnotmem :
+        i ∉ higherCreationSupportFiber creators (creators i₀).toFinset := by
+      simpa [higherCreationSupportFiber, S] using hnot
+    simp [f, higherCreation_amplitude_zero_of_not_mem_supportFiber
+      creators i₀ i l hcard hl hlocal hnotmem]
+  rw [hout, add_zero]
+  change
+    (∑ i ∈ higherCreationSupportFiber creators (creators i₀).toFinset,
+        coeff i *
+          creationString (creators i) (wState N)
+            (higherCreationWitnessBits (creators i₀) l)) =
+      higherCreationAggregateCoeff
+          coeff creators (creators i₀).toFinset *
+        creationString (creators i₀) (wState N)
+          (higherCreationWitnessBits (creators i₀) l)
+  calc
+    (∑ i ∈ higherCreationSupportFiber creators (creators i₀).toFinset,
+        coeff i *
+          creationString (creators i) (wState N)
+            (higherCreationWitnessBits (creators i₀) l)) =
       (∑ i ∈ higherCreationSupportFiber creators (creators i₀).toFinset,
-          coeff i *
-            creationString (creators i) (wState N)
-              (higherCreationWitnessBits (creators i₀) l)) =
-        (∑ i ∈ higherCreationSupportFiber creators (creators i₀).toFinset,
-            coeff i) *
-          creationString (creators i₀) (wState N)
-            (higherCreationWitnessBits (creators i₀) l) := by
-              rw [Finset.sum_mul]
-              apply Finset.sum_congr rfl
-              intro i hi
-              rw [creationString_eq_of_mem_higherCreationSupportFiber
-                creators hNodup i₀ i hi]
-      _ =
-        higherCreationAggregateCoeff
-            coeff creators (creators i₀).toFinset *
-          creationString (creators i₀) (wState N)
-            (higherCreationWitnessBits (creators i₀) l) := by
-              rfl
-  · intro i hi
-    rw [higherCreation_amplitude_zero_of_not_mem_supportFiber
-      creators i₀ i l hcard hl hlocal hi, mul_zero]
+          coeff i) *
+        creationString (creators i₀) (wState N)
+          (higherCreationWitnessBits (creators i₀) l) := by
+            rw [Finset.sum_mul]
+            apply Finset.sum_congr rfl
+            intro i hi
+            rw [creationString_eq_of_mem_higherCreationSupportFiber
+              creators hNodup i₀ i hi]
+    _ =
+      higherCreationAggregateCoeff
+          coeff creators (creators i₀).toFinset *
+        creationString (creators i₀) (wState N)
+          (higherCreationWitnessBits (creators i₀) l) := by
+            rfl
 
 /-- CP50: the aggregate coefficient of the selected creator support vanishes
 under the W-eigenstate and selected-witness hypotheses, without support-map
