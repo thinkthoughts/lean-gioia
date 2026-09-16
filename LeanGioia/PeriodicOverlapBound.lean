@@ -1,4 +1,5 @@
 import LeanGioia.PeriodicOverlap
+import LeanGioia.PeriodicOverlapModel
 
 /-!
 # LeanGioia.PeriodicOverlapBound
