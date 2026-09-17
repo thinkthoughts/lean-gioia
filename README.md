@@ -3,7 +3,7 @@
 Lean 4 formalization of the W-state locality obstruction developed from Lei
 Gioia's seminar material and the corresponding source result.
 
-**Start with the illustrated report:** [`REPORT/README.md`](REPORT/README.md)  
+**Start with the visuals and captions; or full report:** [`REPORT/README.md`](REPORT/README.md)  |  [`REPORT/README.md`](REPORT/REPORT.md)
 **Report page:** `labreports.app/gioia`
 
 The report gives a visual route from the source reading point through
