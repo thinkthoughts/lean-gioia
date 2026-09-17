@@ -61,7 +61,7 @@ Corollary-1 vacuum eigenstate conclusion
 
 ## Support-aggregation subchain
 
-### CP47
+### CP47 — support fibers
 
 `HigherCreationSupportFiber.lean`
 
@@ -71,10 +71,10 @@ Introduces support fibers and:
 higherCreationAggregateCoeff
 ```
 
-The aggregate coefficient is the sum of externally indexed coefficients whose
-creator lists have the same finite support.
+The aggregate coefficient sums externally indexed coefficients whose creator
+lists carry the same finite support.
 
-### CP48
+### CP48 — support representation
 
 `CreationStringSupport.lean`
 
@@ -84,17 +84,17 @@ Key result:
 creationString_eq_of_toFinset_eq
 ```
 
-For duplicate-free creator lists, equality of finite support is sufficient for
-equality of the associated creation string.
+For duplicate-free creator lists, equality of finite support specifies equality
+of the associated creation string.
 
-### CP49
+### CP49 — operator aggregation
 
 `HigherCreationSupportAggregation.lean`
 
-Uses CP48 to rewrite all contributions in one support fiber through the same
+Uses CP48 to rewrite contributions in one support fiber through the same
 creation-string operator and factor their coefficient sum.
 
-### CP50
+### CP50 — aggregate zero
 
 `HigherCreationAggregateZero.lean`
 
@@ -104,10 +104,10 @@ Key result:
 all_higherCreation_aggregate_coefficients_zero_of_eigenstate
 ```
 
-This is the replacement for the earlier pointwise higher-coefficient-zero step.
-It does not require support-map injectivity.
+The higher-sector conclusion is expressed directly through the aggregate
+coefficient attached to a represented support.
 
-### CP51
+### CP51 — aggregate representation
 
 `PureCreationAggregateRepresentation.lean`
 
@@ -120,7 +120,7 @@ PureCreationAggregateRepresentationMatches
 and transports support-aggregate coefficient information into the existing
 mixed Row-One / vacuum-eigenstate machinery.
 
-### CP52
+### CP52 — final assembly
 
 `PeriodicOverlapAggregateClosed.lean`
 
@@ -134,19 +134,15 @@ corollary_one_from_periodic_overlap_aggregate_closed
 
 This closes the reduced route.
 
-## Historical comparison
+## Representation refinement
 
-The historical end-to-end theorem remains useful because it records the earlier
-proof architecture. Its higher branch proves individual external coefficients
-zero and therefore requires injectivity of:
+The earlier end-to-end theorem records a route through individual external
+higher coefficients and support injectivity.
 
-```lean
-fun k => (higherCreators k).toFinset
-```
+The CP47–CP52 route specifies the mathematical quantity at the representation
+boundary as the coefficient aggregate visible to the common creation-string
+operator.
 
-The CP47–CP52 route changes the mathematical quantity at the representation
-boundary from an arbitrary individual coefficient to the coefficient aggregate
-visible to the common creation-string operator.
-
-That is why support coverage remains in the final theorem while support
-injectivity disappears.
+Accordingly, the final route uses support **coverage**: each mixed higher
+support has a representative in the external higher family. Shared supports
+are collected through their aggregate coefficient.

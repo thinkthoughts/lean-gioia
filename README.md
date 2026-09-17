@@ -1,12 +1,13 @@
 # lean-gioia
 
-Lean 4 formalization developed from specifications extracted from Lei Gioia's seminar material and related mathematical structure.
+Lean 4 formalization developed from specifications extracted from Lei Gioia's
+seminar material and related mathematical structure.
 
-The repository separates three things deliberately:
+The repository organizes:
 
 1. **formalized mathematical statements** checked by Lean;
-2. **explicit hypotheses / representation choices** supplied to those statements;
-3. **physical interpretation**, which is not inferred merely from a successful formal proof.
+2. **explicit hypotheses and representation choices** supplied to those statements;
+3. **physical interpretation** associated with the formal specifications.
 
 The current proof architecture closes at **Checkpoint 52**.
 
@@ -28,37 +29,34 @@ It derives the vacuum eigenstate conclusion for the mixed normal-ordered
 operator from the stated periodic-overlap, eigenstate, support, and
 representation hypotheses.
 
-The important reduction relative to the earlier route is:
+CP47–CP52 refine the higher-creation representation from individual external
+indices to the aggregate coefficient carried by a common finite creator
+support:
 
 ```text
-historical route:
+earlier route:
 support injectivity
     → individual higher coefficient zero
     → mixed Row One
     → Corollary 1
 
-reduced route:
+CP47–CP52 route:
 support coverage
     → support-fiber aggregate coefficient zero
     → mixed Row One
     → Corollary 1
 ```
 
-The final theorem therefore has **no hypothesis**
-
-```lean
-Function.Injective
-  (fun k => (higherCreators k).toFinset)
-```
-
-The remaining representation condition is support **coverage**:
+The final representation condition is support **coverage**:
 
 ```lean
 HigherCreationMixedSupportCovered term higherCreators
 ```
 
-Existence of a represented support remains required; uniqueness of the external
-index representing that support does not.
+Each higher pure-creation support appearing in the mixed expansion is
+represented in the external higher-creation family. Multiple external indices
+may share that support, with their coefficients collected by the support-fiber
+aggregate.
 
 ## Final checked route
 
@@ -111,8 +109,7 @@ EOF
 lake env lean /tmp/cp52_audit.lean
 ```
 
-At the CP52 reading point, the theorem audit reports only the standard
-Lean/mathlib axioms:
+At the CP52 reading point, the theorem dependency report is:
 
 ```text
 propext
@@ -120,7 +117,8 @@ Classical.choice
 Quot.sound
 ```
 
-No project-specific axiom appears in that theorem's dependency report.
+The project proof layer uses the theorem signatures and these standard
+Lean/mathlib foundations.
 
 Placeholder audit:
 
@@ -129,30 +127,33 @@ grep -R -n -E '\bsorry\b|\badmit\b' \
   LeanGioia --include='*.lean'
 ```
 
-At the CP52 reading point this returns no matches.
+At the CP52 reading point this returns an empty result.
 
 ## Documentation
 
 - [`docs/CHECKPOINT_INDEX.md`](docs/CHECKPOINT_INDEX.md) — proof-development map
 - [`docs/THEOREM_MAP.md`](docs/THEOREM_MAP.md) — principal theorem dependencies
 - [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) — build and audit commands
-- [`docs/SCOPE.md`](docs/SCOPE.md) — formalized / assumed / out-of-scope boundary
+- [`docs/SCOPE.md`](docs/SCOPE.md) — formalized statements, supplied specifications,
+  and interpretation boundary
 
-Individual `CHECKPOINT_*.md` files remain the detailed development record.
+Individual `CHECKPOINT_*.md` files provide the detailed development record.
 
 ## Evidence discipline
 
-A Lean theorem establishes its conclusion from its stated hypotheses in the
-formal model. It does not by itself establish that a physical system satisfies
-those hypotheses.
+A Lean theorem specifies a checked implication from stated hypotheses to its
+conclusion.
 
-In particular:
+For this repository, the evidence chain is:
 
 ```text
-formal derivation ≠ experimental validation
-representation choice ≠ measured physical cause
-specified mathematical relation ≠ established implementation
+source specification
+    → formal objects
+    → explicit hypotheses
+    → checked derivation
+    → theorem conclusion
+    → physical comparison at specified reading points
 ```
 
-The theorem signatures are the authoritative statement of what has actually
-been proved.
+The theorem signatures provide the authoritative reading point for the
+formalized claims.

@@ -24,7 +24,7 @@ A successful full build is the repository-level verification reading point.
 lake env lean LeanGioia/PeriodicOverlapAggregateClosed.lean
 ```
 
-A silent return to the shell prompt means the file typechecks.
+A silent return to the shell prompt records the file-level typecheck.
 
 ## Final CP52 target build
 
@@ -45,15 +45,13 @@ EOF
 lake env lean /tmp/cp52_audit.lean
 ```
 
-Audit questions:
+The CP52 theorem signature records the final representation condition as:
 
-1. Is `Function.Injective (fun k => (higherCreators k).toFinset)` absent from
-   the final theorem signature?
-2. Is `HigherCreationMixedSupportCovered term higherCreators` visible?
-3. Does the axiom report contain only expected Lean/mathlib axioms rather than
-   project-specific axioms?
+```lean
+HigherCreationMixedSupportCovered term higherCreators
+```
 
-At the CP52 frozen reading point, the axiom report was:
+The CP52 frozen axiom reading point is:
 
 ```text
 propext
@@ -68,7 +66,7 @@ grep -R -n -E '\bsorry\b|\badmit\b' \
   LeanGioia --include='*.lean'
 ```
 
-At the CP52 frozen reading point this produced no output.
+The CP52 frozen reading point produced an empty result.
 
 ## Git reading point
 
@@ -85,11 +83,9 @@ HEAD = main = origin/main = origin/HEAD
 dd903c7 Add files via upload
 ```
 
-## Known non-blocking warnings
+## Build messages
 
-The final builds may replay linter/style warnings in earlier modules, including
-unused `simp` arguments and style suggestions. These warnings are distinct from
-proof failures.
-
-A warning-cleanup pass may be useful for presentation, but it is not part of
-the CP52 mathematical closure.
+The final builds may replay linter/style suggestions in earlier modules,
+including unused `simp` arguments and `let`/`letI` suggestions. These can be
+handled in a presentation cleanup pass while preserving the CP52 theorem
+reading point.

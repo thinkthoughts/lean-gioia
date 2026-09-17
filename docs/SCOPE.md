@@ -1,16 +1,16 @@
-# Scope: Formalized, Assumed, and Out of Scope
+# Scope: Formal Statements, Supplied Specifications, and Physical Comparison
 
-This file is a guardrail for interpreting the repository.
+This document records the interpretation boundary of the repository in
+affirmative terms.
 
-## Formalized
+## Formalized statements
 
-The repository contains Lean-checked definitions and theorem chains for the
-mathematical model used in the project, including:
+The repository contains Lean-checked definitions and theorem chains for:
 
 - W-state and support constructions;
-- operator/eigenstate layers used by the argument;
+- operator and eigenstate layers used by the argument;
 - pure-creation and creation-string constructions;
-- single-creation and higher-creation coefficient constraints under the stated
+- single-creation and higher-creation coefficient constraints under stated
   eigenstate hypotheses;
 - cyclic/periodic overlap geometry and witness construction;
 - mixed normal-ordered Row-One reasoning;
@@ -18,74 +18,90 @@ mathematical model used in the project, including:
 - invariance of duplicate-free creation strings under equality of finite
   creator support;
 - aggregation of coefficients over equal-support fibers;
-- vanishing of represented-support aggregate coefficients under the stated
+- vanishing of represented-support aggregate coefficients under stated
   hypotheses;
-- transport of those aggregate results into the mixed expansion;
+- transport of aggregate results into the mixed expansion;
 - the final CP52 vacuum-eigenstate conclusion.
 
-The authoritative scope is always the theorem signature.
+The theorem signature provides the authoritative reading point for each checked
+implication.
 
-## Assumed in the final CP52 theorem
+## Supplied specifications in the final CP52 theorem
 
-The final theorem takes explicit hypotheses rather than deriving every premise
-from physics.
+The final theorem works from explicit specifications including:
 
-These include, in particular:
-
-- the size/spacing inequalities appearing in the theorem;
+- the size and spacing inequalities in the theorem signature;
 - the single-creation eigenstate hypothesis;
 - the higher-creation-family eigenstate hypothesis;
-- the supplied periodic-overlap placement/support data;
+- periodic-overlap placement and support data;
 - `HigherCreationFamilyListSupport`;
 - duplicate-free (`Nodup`) higher creator lists;
 - `HigherCreationMixedSupportCovered`;
 - `PureCreationAggregateRepresentationMatches`;
 - `NonidentityNormalOrderedFamily`.
 
-The formal proof establishes the conclusion **conditional on these
-specifications**.
+These specifications define the admissible inputs to the final checked
+derivation.
 
-## What CP47–CP52 removes
+## CP47–CP52 representation result
 
-The final reduced theorem does not assume:
+The CP47–CP52 route organizes higher-creation terms by finite creator support.
+
+For a support `S`, the operator-visible coefficient is represented by:
 
 ```lean
-Function.Injective
-  (fun k => (higherCreators k).toFinset)
+higherCreationAggregateCoeff higherCoeff higherCreators S
 ```
 
-The proof instead uses support-fiber aggregate coefficients.
+Equal duplicate-free creator supports specify the same creation-string
+operator, and their externally indexed coefficients are collected in the
+support-fiber aggregate.
 
-This is a reduction of a representation/indexing assumption. It should not be
-described as experimental evidence about a physical system.
+The final theorem therefore uses:
 
-## Out of scope
+```lean
+HigherCreationMixedSupportCovered term higherCreators
+```
 
-Unless separately supplied and verified elsewhere, the repository does not by
-itself establish:
+as its representation bridge: each higher pure-creation support in the mixed
+expansion has a representative in the external higher family.
 
-- that a particular experimental material or device satisfies the formal
-  hypotheses;
-- that the chosen operator model is uniquely forced by a physical system;
-- measured parameter values;
-- experimental error bars or calibration;
-- microscopic causal mechanisms;
-- implementation performance;
-- a claim that formal derivability substitutes for empirical validation;
-- a complete formalization of all content in the source seminar or related
-  research program.
+This distinguishes **support coverage** from **support uniqueness** and places
+the aggregate coefficient at the operator representation boundary.
 
-## Interpretation rule
+## Physical comparison layer
 
-Use the following reading discipline:
+Physical application supplies additional reading points connecting the formal
+objects and hypotheses to a measured or modeled system.
+
+Relevant evidence can specify:
+
+- which experimental state corresponds to the formal state object;
+- which measured or modeled transformation corresponds to a formal operator;
+- parameter values and measurement intervals;
+- experimental uncertainties and calibration;
+- the physical basis for locality or overlap specifications;
+- the mapping between source notation and Lean representation;
+- implementation or device-level observables associated with the theorem's
+  quantities.
+
+These reading points provide the comparison layer between a checked formal
+implication and a particular physical application.
+
+## Evidence chain
+
+The repository can be read through the following specification flow:
 
 ```text
-specified measurement ≠ specified cause
-formal theorem ≠ experimental validation
-representation coverage ≠ physical identification
-mathematical closure ≠ empirical closure
+source specification
+    → engineering / mathematical objects
+    → measurable or formal states
+    → explicit hypotheses
+    → checked derivation
+    → theorem conclusion
+    → physical comparison at specified reading points
 ```
 
-The project is strongest where its boundaries remain explicit: Lean checks the
-formal implication; experiments and source evidence determine where the
-hypotheses apply.
+Leading specifications constrain admissible generalizations.
+
+Admissible generalizations trail leading specifications.
