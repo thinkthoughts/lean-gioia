@@ -1,6 +1,9 @@
 # A Formalization of the W-State Locality Obstruction
 
-**Report page:** `labreports.app/gioia`
+
+**Full report:**  [`REPORT/README.md`](REPORT/REPORT.md)
+
+**Report page:** <a href="https://labreports.app/gioia">`labreports.app/gioia`</a>
 
 This page collects the report figures for Formalization Specification 001. The figures move from the complete source-to-formal route, to the finite-range witness geometry, to the support-fiber representation refinement, and finally to a reusable research workflow from reading point to checked specification.
 
