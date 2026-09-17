@@ -5,7 +5,7 @@ Gioia's seminar material and the corresponding source result.
 
 **Start with the visuals and captions; or full report:** [`REPORT/README.md`](REPORT/README.md)  |  [`REPORT/README.md`](REPORT/REPORT.md)
 
-**Report page:** `labreports.app/gioia`
+**Report page:** <a href="https://labreports.app/gioia">`labreports.app/gioia`</a>
 
 The report gives a visual route from the source reading point through
 finite-range witness geometry and support-fiber aggregation to the checked
