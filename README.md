@@ -1,73 +1,158 @@
 # lean-gioia
 
-Lean formalizations of results from Lei Gioia's research, developed from seminar and paper specifications.
+Lean 4 formalization developed from specifications extracted from Lei Gioia's seminar material and related mathematical structure.
 
-## Initial formalization
+The repository separates three things deliberately:
 
-The first target comes from Gioia–Moudgalya–Motrunich, *Distinct Types of Parent Hamiltonians for Quantum States: Insights from the W State as a Quantum Many-Body Scar*.
+1. **formalized mathematical statements** checked by Lean;
+2. **explicit hypotheses / representation choices** supplied to those statements;
+3. **physical interpretation**, which is not inferred merely from a successful formal proof.
 
-The initial scientific boundary is:
+The current proof architecture closes at **Checkpoint 52**.
 
-> If the W state is an eigenstate of an extensive-local operator, then the vacuum state is also an eigenstate.
+## Main result of the CP47–CP52 reduction
 
-See [`SPEC.md`](SPEC.md) for the controlling formalization specification.
+The final theorem is
 
-## Repository structure
-
-```text
-LeanGioia/
-  Basic.lean
-  WState.lean
-docs/
-  CU_Seminar_260911/
-sources/
-SPEC.md
-LeanGioia.lean
-lakefile.toml
-lean-toolchain
+```lean
+LeanGioia.corollary_one_from_periodic_overlap_aggregate_closed
 ```
 
-- `LeanGioia/Basic.lean` — shared definitions introduced only as required by the source specification.
-- `LeanGioia/WState.lean` — Formalization 001.
-- `docs/CU_Seminar_260911/` — seminar context and reading-point documentation.
-- `sources/` — source papers used to define formalization boundaries.
-- `SPEC.md` — scientific and formal boundary for the current Lean target.
-
-## Workflow
-
-Seminar → source paper → stated result → formalization specification → Lean verification → next specification
-
-## Build
+in:
 
 ```text
+LeanGioia/PeriodicOverlapAggregateClosed.lean
+```
+
+It derives the vacuum eigenstate conclusion for the mixed normal-ordered
+operator from the stated periodic-overlap, eigenstate, support, and
+representation hypotheses.
+
+The important reduction relative to the earlier route is:
+
+```text
+historical route:
+support injectivity
+    → individual higher coefficient zero
+    → mixed Row One
+    → Corollary 1
+
+reduced route:
+support coverage
+    → support-fiber aggregate coefficient zero
+    → mixed Row One
+    → Corollary 1
+```
+
+The final theorem therefore has **no hypothesis**
+
+```lean
+Function.Injective
+  (fun k => (higherCreators k).toFinset)
+```
+
+The remaining representation condition is support **coverage**:
+
+```lean
+HigherCreationMixedSupportCovered term higherCreators
+```
+
+Existence of a represented support remains required; uniqueness of the external
+index representing that support does not.
+
+## Final checked route
+
+```text
+periodic-overlap geometry
+        ↓
+HigherCreationWitnessData
+        ↓
+support-fiber aggregation
+        ↓
+aggregate coefficient zero
+        ↓
+mixed-support coverage
+        ↓
+PureCreationAggregateRepresentationMatches
+        ↓
+MixedRowOneCondition
+        ↓
+vacuum_eigenstate_of_mixedRowOne
+        ↓
+Corollary 1
+```
+
+## Verification
+
+From the repository root:
+
+```bash
 lake update
 lake build
 ```
 
-The project currently follows the same Lean/mathlib revision used by `lean-perovskite`:
+The CP52 theorem can be checked directly with:
 
-```text
-leanprover/lean4:v4.34.0-rc2
-mathlib v4.34.0-rc2
+```bash
+lake env lean LeanGioia/PeriodicOverlapAggregateClosed.lean
+lake build LeanGioia.PeriodicOverlapAggregateClosed
 ```
 
-## Current next step
+For the theorem and axiom audit:
 
-Choose the smallest faithful Lean representation of:
+```bash
+cat > /tmp/cp52_audit.lean <<'EOF'
+import LeanGioia.PeriodicOverlapAggregateClosed
 
-- a finite `N`-qubit state space,
-- the vacuum state,
-- the W state,
-- extensive locality / bounded interaction range,
-- the eigenstate relation,
+#print LeanGioia.corollary_one_from_periodic_overlap_aggregate_closed
+#print axioms LeanGioia.corollary_one_from_periodic_overlap_aggregate_closed
+EOF
 
-then formalize the operator-basis argument underlying the W-state → vacuum-state eigenstate obstruction.
+lake env lean /tmp/cp52_audit.lean
+```
 
-## Deferred
+At the CP52 reading point, the theorem audit reports only the standard
+Lean/mathlib axioms:
 
-- W-state ground-state obstruction
-- full parent-Hamiltonian decomposition
-- type I / II / III classification
-- asymptotic QMBS results
-- nonzero-momentum circuit obstruction
-- RG / anomaly generalizations
+```text
+propext
+Classical.choice
+Quot.sound
+```
+
+No project-specific axiom appears in that theorem's dependency report.
+
+Placeholder audit:
+
+```bash
+grep -R -n -E '\bsorry\b|\badmit\b' \
+  LeanGioia --include='*.lean'
+```
+
+At the CP52 reading point this returns no matches.
+
+## Documentation
+
+- [`docs/CHECKPOINT_INDEX.md`](docs/CHECKPOINT_INDEX.md) — proof-development map
+- [`docs/THEOREM_MAP.md`](docs/THEOREM_MAP.md) — principal theorem dependencies
+- [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) — build and audit commands
+- [`docs/SCOPE.md`](docs/SCOPE.md) — formalized / assumed / out-of-scope boundary
+
+Individual `CHECKPOINT_*.md` files remain the detailed development record.
+
+## Evidence discipline
+
+A Lean theorem establishes its conclusion from its stated hypotheses in the
+formal model. It does not by itself establish that a physical system satisfies
+those hypotheses.
+
+In particular:
+
+```text
+formal derivation ≠ experimental validation
+representation choice ≠ measured physical cause
+specified mathematical relation ≠ established implementation
+```
+
+The theorem signatures are the authoritative statement of what has actually
+been proved.
