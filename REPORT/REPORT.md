@@ -1,12 +1,12 @@
 # A Formalization of the W-State Locality Obstruction
 
-**Status:** Draft v0.1  
+**Status:** Draft v0.2  
 **Formal reading point:** Checkpoint 52  
 **Report page:** `labreports.app/gioia`
 
 ## Abstract
 
-This report presents a Lean 4 formalization of the W-state locality obstruction developed from Lei Gioia's seminar material and the corresponding source result. The source argument considers an extensive-local operator on a periodic qubit chain and constrains its normal-ordered pure-creation terms under the assumption that the W state is an eigenstate. The formal development separates the single-creation and higher-creation sectors, encodes finite-range cyclic geometry and witness constructions, and closes the higher-creation route using support-fiber aggregate coefficients rather than injective indexing of external terms. The resulting end-to-end theorem derives the vacuum-eigenstate conclusion for a mixed normal-ordered operator from explicit periodic-overlap, eigenstate, support, coverage, and representation hypotheses. The repository closes this proof architecture at Checkpoint 52 and records the source-to-formal boundary, theorem dependencies, reproducibility commands, and a workflow for using the formalization as a checked research reading point.
+This report presents a Lean 4 formalization of the W-state locality obstruction in Lei Gioia, Sanjay Moudgalya, and Olexei I. Motrunich, *Distinct Types of Parent Hamiltonians for Quantum States: Insights from the W State as a Quantum Many-Body Scar* (arXiv:2510.24713v3). The source argument constrains normal-ordered pure-creation terms of an extensive-local operator on a periodic qubit chain under a W-state eigenstate relation and derives a vacuum-eigenstate corollary. The formal development separates the single-creation and higher-creation sectors, makes the finite-range witness geometry explicit, and refines the higher-creation representation to the support-fiber aggregate coefficient carried by a common creation-string operator. The closed Checkpoint-52 theorem derives the represented vacuum-eigenstate conclusion from explicit geometry, eigenstate, support, coverage, and representation specifications.
 
 ---
 
@@ -22,11 +22,19 @@ The final refinement concerns representation itself. Distinct external indices c
 
 ![Figure A. Diagram of the source-to-formal route for the W-state locality obstruction. An extensive-local finite-range operator and W-state eigenstate relation branch into the single-creation and higher-creation sectors. The single branch yields a zero single-creation coefficient. The higher branch uses cyclic locality and witness construction to obtain a zero support-fiber aggregate coefficient. Support coverage and coefficient matching join the branches in the representation bridge, yielding the mixed Row-One condition and the checked vacuum-eigenstate conclusion.](Figure_A.png)
 
-**Figure A. Source locality to checked vacuum eigenstate.** The source reading point supplies an extensive-local operator with bounded interaction range and a W-state eigenstate relation, with a Hermiticity assumption excluded. The formal derivation separates the pure-creation sector into single-creation and higher-creation branches. Support coverage and coefficient matching reconnect those results to the mixed normal-ordered representation, yielding `MixedRowOneCondition` and the checked vacuum-eigenstate conclusion.
+**Figure A. Source locality to checked vacuum eigenstate.** The source reading point supplies an extensive-local operator with bounded interaction range and a W-state eigenstate relation, with a Hermiticity assumption excluded. The formal derivation separates the pure-creation sector into single-creation and higher-creation branches. Those branches derive the relevant coefficient equalities; support coverage and coefficient matching transport them to the mixed normal-ordered representation, yielding `MixedRowOneCondition` and the checked vacuum-eigenstate conclusion.
 
 ---
 
 ## 2. Source result and Corollary 1
+
+The primary source is:
+
+> Lei Gioia, Sanjay Moudgalya, and Olexei I. Motrunich,  
+> **Distinct Types of Parent Hamiltonians for Quantum States: Insights from the W State as a Quantum Many-Body Scar**,  
+> arXiv:2510.24713v3.
+
+The principal reading points are Sec. III.B and Definition 1 for the finite-range hard-core-boson operator basis, Eqs. (16)–(17) for the W-state eigenvalue relation and operator expansion, Table I for the coefficient constraints, Sec. III.C for Corollary 1, and Appendix C for the detailed pure-creation argument.
 
 The source uses a normal-ordered operator basis built from on-site hard-core-boson operators: identity, creation, annihilation, and number operators. Nontrivial strings can be written schematically as
 
@@ -39,7 +47,7 @@ The pure-creation sector has \(m=0\). The relevant first row of the source class
 
 The source then obtains Corollary 1: if the W state is an eigenstate of the extensive-local operator, the vacuum is also an eigenstate. After the pure-creation coefficients equal zero, every remaining nonidentity normal-ordered term contains an annihilation operator. Such terms annihilate the vacuum, leaving only the identity contribution.
 
-The source argument does not require Hermiticity for this conclusion. The formal route therefore records:
+The source states that Hermiticity is not required for this Corollary-1 argument. The formal route therefore records:
 
 > **Hermiticity assumption excluded.**
 
@@ -100,7 +108,7 @@ The formalization organizes the source argument around explicit objects and rela
 
 The final route also assumes \(3\le N\), duplicate-free higher-creation lists, finite-range support, and the relevant eigenstate hypotheses. These prerequisites are visible in the final theorem signature rather than hidden in prose.
 
-The specification distinguishes supplied prerequisites from derived statements. In particular, locality and representation conditions are supplied to the theorem; coefficient equalities and the final vacuum-eigenstate relation are derived from them.
+The specification distinguishes supplied prerequisites from derived statements. Locality, eigenstate, support, coverage, and representation conditions are supplied to the relevant theorem signatures. The single-creation equality, represented-support aggregate equalities, `MixedRowOneCondition`, and final vacuum-eigenstate relation are derived along the checked route.
 
 ---
 
@@ -120,7 +128,7 @@ The single-creation argument uses its own geometry. A creator site \(j\), a sepa
 
 ![Figure B. Periodic-chain diagrams for the single-creation and higher-creation witness constructions. A global chain-size condition N greater than 3R enables separated local regions. In the single-creation sector, a creator site, separated excitation site, and third site supply the Appendix C witness geometry and a zero single-creation coefficient. In the higher-creation sector, finite creator support lies in a range-R cyclic block and a witness site outside the support supplies HigherCreationWitnessData and a zero aggregate coefficient for the represented support.](Figure_B.png)
 
-**Figure B. Finite-range witness geometry.** The condition \(N>3R\) supplies the separation used by the Appendix C witness constructions. The single-creation branch uses a third-site witness geometry. The higher-creation branch packages finite-support separation as `HigherCreationWitnessData`.
+**Figure B. Finite-range witness geometry.** The condition \(N>3R\) supplies the separation used by the Appendix C witness constructions. The single-creation branch uses a third-site witness geometry. The higher-creation branch packages finite-support separation as `HigherCreationWitnessData`; together with the W-state eigenstate relation, this data supports the checked aggregate-zero derivation.
 
 ---
 
@@ -188,7 +196,7 @@ The final higher-creation theorem derives aggregate coefficient zero for the rep
 C(S)=0.
 \]
 
-![Figure C. Four-stage diagram showing support-fiber aggregation in the higher-creation sector. External indices map to duplicate-free creator supports. Equal supports specify the same creation-string operator. Indices with common support S form the support fiber F sub S, and their coefficients sum to the aggregate C of S. The W-state eigenstate relation and finite-range witness data specify C of S as zero for each represented support.](Figure_C.png)
+![Figure C. Four-stage diagram showing support-fiber aggregation in the higher-creation sector. External indices map to duplicate-free creator supports. Equal supports specify the same creation-string operator. Indices with common support S form the support fiber F sub S, and their coefficients sum to the aggregate C of S. The W-state eigenstate relation and finite-range witness data yield C of S equals zero for each represented support.](Figure_C.png)
 
 **Figure C. Support-fiber aggregation.** Equal duplicate-free supports specify a common creation-string operator. The coefficient visible to that operator is the sum over its support fiber. The W-state eigenstate relation and finite-range witness data derive aggregate coefficient zero for each represented higher-creation support.
 
@@ -350,7 +358,7 @@ The support-fiber refinement illustrates why formalization can expose a useful r
 
 This refinement changes the formal dependency route without changing the source conclusion. The higher-creation obstruction constrains the coefficient of the common creation-string operator; support-fiber aggregation specifies that coefficient independently of how many external indices represent it.
 
-The repository also provides a reusable workflow for another leading researcher. A reading point can be selected from a paper, seminar, measurement, or existing formal result. Leading specifications identify the objects, prerequisites, constraints, scope, and excluded assumptions. AI-assisted engineering can help translate those specifications into formal objects, theorem signatures, proof checkpoints, and source maps. Lean then checks the resulting formal implications. The checked result returns to the researcher as a new reading point from which the next specification can be selected.
+The repository also provides a reusable workflow for another leading researcher. A reading point can be selected from a paper, seminar, measurement, or existing formal result. Leading specifications identify the objects, prerequisites, constraints, scope, and excluded assumptions. AI-assisted engineering can help propose and translate those specifications into formal objects, theorem signatures, proof checkpoints, and source maps. The researcher compares those constructions with the source and selects the specifications to carry forward. Lean then checks the resulting formal implications. The checked result returns to the researcher as a new reading point from which the next specification can be selected.
 
 ![Figure D. Research workflow led by the researcher. A reading point leads to leading specifications, AI-assisted engineering, a formal check in Lean, and a checked reading point, with an iteration arrow returning checked results to new reading points. A lower Gioia example applies the same workflow from source reading point through the W-state locality formalization to the checked vacuum-eigenstate result.](Figure_D.png)
 
@@ -360,28 +368,27 @@ The repository also provides a reusable workflow for another leading researcher.
 
 ---
 
-## 13. Subsequent work
+## 13. Subsequent reading points
 
-The CP52 proof architecture is closed. Subsequent work can proceed from the checked reading point rather than extending the checkpoint sequence by default.
-
-Useful next targets include:
-
-- comparison of the completed theorem against additional source formulations or special cases;
-- reusable abstractions for support-fiber aggregation in other operator expansions;
-- formalizations of further results whose source prerequisites can be stated at compatible reading points;
-- publication of the report and its source-to-formal evidence map.
-
-A new formal checkpoint is warranted where a new specification introduces a genuinely new theorem dependency, representation layer, or source result.
+The CP52 proof architecture closes Formalization Specification 001. Further work begins from a new reading point rather than extending this checkpoint sequence by default. Candidate directions include reusable support-fiber abstractions and additional source results from the parent-Hamiltonian analysis. Each new target should begin with its own source statement, leading specifications, and explicit dependency route.
 
 ---
 
 ## 14. Conclusion
 
-The `lean-gioia` development formalizes the W-state locality obstruction through an explicit route from finite-range cyclic geometry and W-state eigenstate hypotheses to the vacuum-eigenstate conclusion. The completed architecture separates the single-creation and higher-creation sectors, reconstructs the witness geometry, and closes the higher-creation representation through support-fiber aggregate coefficients.
+The `lean-gioia` development gives an explicit checked route from finite-range cyclic geometry, W-state eigenstate relations, and representation specifications to the represented Corollary-1 vacuum-eigenstate conclusion. The completed architecture separates the single-creation and higher-creation sectors and reconstructs their witness geometry.
 
-The final CP52 theorem uses support coverage rather than support injectivity. Equal duplicate-free creator supports specify a common creation-string operator, and the coefficient visible to that operator is the aggregate over its support fiber. The W-state eigenstate relation and witness data derive that aggregate coefficient as zero on represented higher-creation supports. The representation bridge then establishes the mixed Row-One condition and the vacuum-eigenstate conclusion.
+Its central representation refinement is that equal duplicate-free creator supports specify a common creation-string operator. The operator-visible higher-creation coefficient is therefore the aggregate over the corresponding support fiber. This permits the final CP52 route to use support coverage rather than support injectivity before deriving `MixedRowOneCondition` and the vacuum-eigenstate conclusion.
 
-The result is both a checked formal implication and a documented research reading point: source evidence supplies the prerequisites, leading specifications constrain the formal route, AI can assist its engineering, Lean checks its consequences, and the researcher determines what follows now.
+The completed formalization is also a documented reading point: source evidence supplies prerequisites, leading specifications constrain the formal route, AI can assist its engineering, Lean checks the resulting implications, and the researcher determines what follows now.
+
+---
+
+## References
+
+1. Lei Gioia, Sanjay Moudgalya, and Olexei I. Motrunich, **Distinct Types of Parent Hamiltonians for Quantum States: Insights from the W State as a Quantum Many-Body Scar**, arXiv:2510.24713v3.
+
+The detailed source-location ledger for this report is maintained in [`../docs/SOURCE_TO_LEAN.md`](../docs/SOURCE_TO_LEAN.md).
 
 ---
 
