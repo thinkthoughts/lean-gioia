@@ -1,7 +1,7 @@
 # A Formalization of the W-State Locality Obstruction
 
 
-**Full report:**  [`REPORT/REPORT.md`](REPORT/REPORT.md)
+**Full report:**  [`REPORT/REPORT.md`](REPORT.md)
 
 **Report page:** <a href="https://labreports.app/gioia">`labreports.app/gioia`</a>
 
