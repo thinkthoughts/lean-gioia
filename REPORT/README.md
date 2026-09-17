@@ -2,7 +2,7 @@
 
 **Report page:** `labreports.app/gioia`
 
-This page collects the report figures for Formalization Specification 001. The figures move from the complete source-to-formal route, to the finite-range witness geometry, to the support-fiber representation refinement.
+This page collects the report figures for Formalization Specification 001. The figures move from the complete source-to-formal route, to the finite-range witness geometry, to the support-fiber representation refinement, and finally to a reusable research workflow from reading point to checked specification.
 
 ---
 
@@ -36,6 +36,16 @@ This page collects the report figures for Formalization Specification 001. The f
 
 ---
 
+## Figure D — Research workflow from reading point to checked specification
+
+![Figure D. Research workflow led by the researcher. A reading point leads to leading specifications, AI-assisted engineering, a formal check in Lean, and a checked reading point, with an iteration arrow returning checked results to new reading points. A lower Gioia example applies the same workflow from source reading point through the W-state locality formalization to the checked vacuum-eigenstate result.](Figure_D.png)
+
+**Caption.** **Figure D. Research workflow from reading point to checked specification.** The leading researcher selects, specifies, compares, and interprets. A reading point supplies the result to specify; leading specifications state the available objects, prerequisites, constraints, scope, and excluded assumptions; AI-assisted engineering translates that specification into formal objects, theorem signatures, and checkpointed proof development; and Lean supplies the formal check through elaboration, kernel verification, theorem-signature checks, and dependency and axiom audits. The checked reading point returns the verified statements to the researcher for source comparison, interpretation, and selection of what follows now. The Gioia example instantiates this workflow with finite cyclic geometry, the W-state eigenstate relation, witness data, support-fiber aggregation, `MixedRowOneCondition`, and the checked vacuum-eigenstate conclusion. **Admissible generalizations follow leading specifications.**
+
+**Alt text.** Workflow diagram headed Leading Researcher, with the verbs selects, specifies, compares, and interprets. Five connected stages run from Reading point to Leading specifications, AI-assisted engineering, Formal check, and Checked reading point. An iteration arrow returns the checked reading point to a new reading point. A lower example applies the workflow to the Gioia formalization: a finite periodic chain with range \(R\), \(N>3R\), a W-state definition, and an operator eigenstate relation lead through locality and witness specifications, AI-assisted construction of formal objects and theorem signatures, and Lean verification to `MixedRowOneCondition`, single-creation coefficient equals zero, support-fiber aggregate coefficient equals zero, and the vacuum-eigenstate conclusion. The footer states that admissible generalizations follow leading specifications.
+
+---
+
 ## Figure sequence
 
-Figure A gives the complete source-to-formal architecture. Figure B isolates the finite-range geometry that supplies the witness data. Figure C isolates the representation refinement that maps multiple external indices with a common creator support to one operator-visible support-fiber aggregate coefficient.
+Figure A gives the complete source-to-formal architecture. Figure B isolates the finite-range geometry that supplies the witness data. Figure C isolates the representation refinement that maps multiple external indices with a common creator support to one operator-visible support-fiber aggregate coefficient. Figure D turns the completed formalization outward as a reusable research workflow: the leading researcher specifies the reading point, AI assists the engineering of formal objects and proofs, Lean checks the formal consequences, and the checked result becomes a possible next reading point.
