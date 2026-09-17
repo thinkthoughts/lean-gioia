@@ -2,10 +2,10 @@
 
 ## Provisional title
 
-**Formalizing the W-State Locality Obstruction in Lean 4**
+**A Formalization of the W-State Locality Obstruction**
 
 ### Alternative working titles
-
+- **Formalizing the W-State Locality Obstruction in Lean 4**
 - **A Lean 4 Formalization of the W-State Locality Obstruction**
 - **From Locality to Vacuum Eigenstates: Formalizing a W-State Corollary in Lean 4**
 - **Support-Fiber Aggregation in a Lean 4 Formalization of the W-State Locality Obstruction**
