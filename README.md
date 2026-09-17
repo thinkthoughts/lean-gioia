@@ -175,11 +175,17 @@ For this repository, the evidence chain is:
 
 ```text
 source specification
-    → representation specification
-    → formal objects
-    → explicit hypotheses
-    → checked derivation
-    → theorem conclusion
+    → normal-ordered representation specification
+    → mixedNormalOrderedOperator
+
+geometry / separation specifications
+    → PeriodicOverlapCreationModel
+    → HigherCreationWitnessData
+    → checked support-fiber aggregate-zero result
+    → representation bridge
+    → MixedRowOneCondition
+    → vacuum_eigenstate_of_mixedRowOne
+    → Corollary 1
     → physical comparison at specified reading points
 ```
 

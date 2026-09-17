@@ -168,13 +168,17 @@ The repository can be read through the following specification flow:
 
 ```text
 source specification
-    → representation specification
+    → normal-ordered representation specification
     → engineering / mathematical objects
     → measurable or formal states
-    → geometry / separation specifications
+
+geometry / separation specifications
+    → PeriodicOverlapCreationModel
+    → HigherCreationWitnessData
+    → checked support-fiber aggregate-zero result
     → representation bridge
-    → checked derivation
-    → theorem conclusion
+    → MixedRowOneCondition
+    → checked vacuum-eigenstate conclusion
     → physical comparison at specified reading points
 ```
 
