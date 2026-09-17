@@ -31,7 +31,10 @@ representation hypotheses.
 
 CP47–CP52 refine the higher-creation representation from individual external
 indices to the aggregate coefficient carried by a common finite creator
-support:
+support.
+
+**The operator-visible quantity is the aggregate coefficient carried by a
+common finite creator support.**
 
 ```text
 earlier route:
@@ -47,7 +50,7 @@ support coverage
     → Corollary 1
 ```
 
-The final representation condition is support **coverage**:
+The final representation condition uses support **coverage**:
 
 ```lean
 HigherCreationMixedSupportCovered term higherCreators
@@ -57,6 +60,30 @@ Each higher pure-creation support appearing in the mixed expansion is
 represented in the external higher-creation family. Multiple external indices
 may share that support, with their coefficients collected by the support-fiber
 aggregate.
+
+## Representation reading point
+
+The checked CP52 route begins with a finite family of normal-ordered
+creation/annihilation terms represented by:
+
+```lean
+mixedNormalOrderedOperator Ω mixedCoeff term
+```
+
+The source-to-Lean comparison therefore includes a distinct representation
+step:
+
+```text
+source extensive-local operator
+        ↓
+normal-ordered representation specification
+        ↓
+mixedNormalOrderedOperator
+```
+
+The source evidence and representation argument specifying this step belong in
+the source-to-Lean map. The Lean theorem then checks the implication from the
+supplied representation and its explicit hypotheses.
 
 ## Final checked route
 
@@ -135,7 +162,7 @@ At the CP52 reading point this returns an empty result.
 - [`docs/THEOREM_MAP.md`](docs/THEOREM_MAP.md) — principal theorem dependencies
 - [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) — build and audit commands
 - [`docs/SCOPE.md`](docs/SCOPE.md) — formalized statements, supplied specifications,
-  and interpretation boundary
+  representation bridge, and physical-comparison layer
 
 Individual `CHECKPOINT_*.md` files provide the detailed development record.
 
@@ -148,6 +175,7 @@ For this repository, the evidence chain is:
 
 ```text
 source specification
+    → representation specification
     → formal objects
     → explicit hypotheses
     → checked derivation

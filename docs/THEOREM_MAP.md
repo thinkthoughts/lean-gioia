@@ -20,9 +20,31 @@ IsEigenstate
   (vacuumKet N) Ω
 ```
 
+## Source-to-formal boundary
+
+The final theorem begins after a representation reading point:
+
+```text
+source extensive-local operator
+        ↓
+source / basis representation argument
+        ↓
+finite normal-ordered family
+        ↓
+mixedNormalOrderedOperator
+```
+
+The source-to-Lean map specifies this connection. The theorem map below begins
+with the formal representation and its explicit hypotheses.
+
 ## Final dependency map
 
 ```text
+hN3 : 3 ≤ N
+hNR : 3 * R < N
+block-containment / support data
+        │
+        ▼
 periodicOverlapModel_closed
         │
         ▼
@@ -58,6 +80,23 @@ vacuum_eigenstate_of_mixedRowOne
         ▼
 Corollary-1 vacuum eigenstate conclusion
 ```
+
+## Representation bridge
+
+The final transport has two named representation specifications.
+
+### `HigherCreationMixedSupportCovered`
+
+Specifies that each mixed higher pure-creation support is represented by at
+least one support in the external higher-creation family.
+
+### `PureCreationAggregateRepresentationMatches`
+
+Specifies how mixed coefficients correspond to the single-creation
+coefficients and higher support-fiber aggregate coefficients.
+
+These are the substantive bridge between the external coefficient families and
+the mixed normal-ordered expansion.
 
 ## Support-aggregation subchain
 
@@ -136,8 +175,8 @@ This closes the reduced route.
 
 ## Representation refinement
 
-The earlier end-to-end theorem records a route through individual external
-higher coefficients and support injectivity.
+The earlier end-to-end route proceeds through individual external higher
+coefficients and support injectivity.
 
 The CP47–CP52 route specifies the mathematical quantity at the representation
 boundary as the coefficient aggregate visible to the common creation-string

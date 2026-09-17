@@ -45,10 +45,14 @@ EOF
 lake env lean /tmp/cp52_audit.lean
 ```
 
-The CP52 theorem signature records the final representation condition as:
+The CP52 theorem signature records, among its explicit inputs:
 
 ```lean
+hN3 : 3 ≤ N
+hNR : 3 * R < N
 HigherCreationMixedSupportCovered term higherCreators
+PureCreationAggregateRepresentationMatches
+  mixedCoeff term singleCoeff higherCoeff higherCreators
 ```
 
 The CP52 frozen axiom reading point is:

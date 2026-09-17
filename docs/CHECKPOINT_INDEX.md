@@ -48,9 +48,30 @@ CP51  aggregate representation → MixedRowOneCondition → Corollary 1
 CP52  closed periodic-overlap assembly + final audit
 ```
 
+## CP52 representation reading point
+
+The final assembly makes three specification layers especially visible:
+
+```text
+geometry / separation
+  ├─ 3 ≤ N
+  ├─ 3R < N
+  └─ cyclic-block containment
+
+representation bridge
+  ├─ HigherCreationMixedSupportCovered
+  └─ PureCreationAggregateRepresentationMatches
+
+operator representation
+  └─ mixedNormalOrderedOperator
+```
+
+These layers provide the principal targets for the source-to-Lean comparison.
+
 ## Closure reading point
 
 CP52 closes the proof-architecture sequence.
 
-README work, theorem maps, reproduction commands, presentation, and warning
-cleanup continue as repository consolidation around the CP52 result.
+README work, theorem maps, reproduction commands, source mapping, presentation,
+and warning cleanup continue as repository consolidation around the CP52
+result.

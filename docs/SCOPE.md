@@ -26,22 +26,102 @@ The repository contains Lean-checked definitions and theorem chains for:
 The theorem signature provides the authoritative reading point for each checked
 implication.
 
-## Supplied specifications in the final CP52 theorem
+## Normal-ordered representation specification
 
-The final theorem works from explicit specifications including:
+The final CP52 theorem works with the operator represented as a finite
+normal-ordered family:
 
-- the size and spacing inequalities in the theorem signature;
+```lean
+mixedNormalOrderedOperator Ω mixedCoeff term
+```
+
+This representation is a supplied starting specification for the checked
+CP52 route.
+
+The source-to-Lean comparison can therefore record explicitly:
+
+```text
+source extensive-local operator
+        ↓
+source / basis representation argument
+        ↓
+finite normal-ordered family
+        ↓
+mixedNormalOrderedOperator
+```
+
+This named boundary keeps the source operator language and the Lean operator
+representation visible as distinct reading points connected by an explicit
+representation specification.
+
+## Geometry and separation specifications
+
+The final theorem includes:
+
+```lean
+hN3 : 3 ≤ N
+hNR : 3 * R < N
+```
+
+These numeric hypotheses specify the finite-size and separation regime used by
+the periodic-overlap geometry and witness construction.
+
+The final route also receives periodic-overlap placement/support data through
+the supplied `start` map and block-containment hypothesis:
+
+```lean
+∀ k : κ,
+  (higherCreators k).toFinset ⊆ cyclicBlock N R (start k)
+```
+
+Together these specifications provide the geometry used to construct the
+higher-creation witness data.
+
+## Representation bridge
+
+Two supplied specifications carry the main representation content of the
+CP47–CP52 transport.
+
+### Mixed-support coverage
+
+```lean
+HigherCreationMixedSupportCovered term higherCreators
+```
+
+For every higher pure-creation term in the mixed expansion, this supplies a
+representative external higher-creation index with the same finite creator
+support.
+
+This is an existence/coverage specification.
+
+### Aggregate representation matching
+
+```lean
+PureCreationAggregateRepresentationMatches
+  mixedCoeff term singleCoeff higherCoeff higherCreators
+```
+
+This connects mixed-expansion coefficients to:
+
+- the corresponding single-creation coefficient for singleton creator terms;
+- the support-fiber aggregate coefficient for higher pure-creation terms.
+
+Together, coverage and aggregate representation matching specify the bridge
+from the external single/higher families into the mixed normal-ordered
+expansion.
+
+## Additional supplied specifications
+
+The final theorem also works from explicit specifications including:
+
 - the single-creation eigenstate hypothesis;
 - the higher-creation-family eigenstate hypothesis;
-- periodic-overlap placement and support data;
 - `HigherCreationFamilyListSupport`;
 - duplicate-free (`Nodup`) higher creator lists;
-- `HigherCreationMixedSupportCovered`;
-- `PureCreationAggregateRepresentationMatches`;
 - `NonidentityNormalOrderedFamily`.
 
-These specifications define the admissible inputs to the final checked
-derivation.
+These specifications define the remaining admissible inputs to the final
+checked derivation.
 
 ## CP47–CP52 representation result
 
@@ -57,17 +137,9 @@ Equal duplicate-free creator supports specify the same creation-string
 operator, and their externally indexed coefficients are collected in the
 support-fiber aggregate.
 
-The final theorem therefore uses:
-
-```lean
-HigherCreationMixedSupportCovered term higherCreators
-```
-
-as its representation bridge: each higher pure-creation support in the mixed
-expansion has a representative in the external higher family.
-
-This distinguishes **support coverage** from **support uniqueness** and places
-the aggregate coefficient at the operator representation boundary.
+The final route therefore places the aggregate coefficient at the operator
+representation boundary and uses support coverage to connect mixed
+higher-creation terms to represented supports.
 
 ## Physical comparison layer
 
@@ -78,6 +150,8 @@ Relevant evidence can specify:
 
 - which experimental state corresponds to the formal state object;
 - which measured or modeled transformation corresponds to a formal operator;
+- the source basis argument supporting the finite normal-ordered
+  representation;
 - parameter values and measurement intervals;
 - experimental uncertainties and calibration;
 - the physical basis for locality or overlap specifications;
@@ -94,9 +168,11 @@ The repository can be read through the following specification flow:
 
 ```text
 source specification
+    → representation specification
     → engineering / mathematical objects
     → measurable or formal states
-    → explicit hypotheses
+    → geometry / separation specifications
+    → representation bridge
     → checked derivation
     → theorem conclusion
     → physical comparison at specified reading points
