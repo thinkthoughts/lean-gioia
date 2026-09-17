@@ -36,7 +36,7 @@ This page collects the report figures for Formalization Specification 001. The f
 
 ---
 
-## Figure D — Research workflow from reading point to checked specification
+## Figure D — Using this repo from reading point to checked specification
 
 ![Figure D. Research workflow led by the researcher. A reading point leads to leading specifications, AI-assisted engineering, a formal check in Lean, and a checked reading point, with an iteration arrow returning checked results to new reading points. A lower Gioia example applies the same workflow from source reading point through the W-state locality formalization to the checked vacuum-eigenstate result.](Figure_D.png)
 
