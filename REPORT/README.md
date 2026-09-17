@@ -5,6 +5,8 @@
 
 **Report page:** <a href="https://labreports.app/gioia">`labreports.app/gioia`</a>
 
+**Tweet notification:** <a href="https://x.com/dan_hawkley/status/2100620108276334602">`arXiv:2510.24713`
+
 This page collects the report figures for Formalization Specification 001. The figures move from the complete source-to-formal route, to the finite-range witness geometry, to the support-fiber representation refinement, and finally to a reusable research workflow from reading point to checked specification.
 
 ---
