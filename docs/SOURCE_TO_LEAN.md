@@ -73,9 +73,13 @@ Thus the normal-ordered representation is a specified source representation of t
 The paper uses
 
 \[
-|Wangle = rac{1}{\sqrt N}\sum_{j=1}^{N}s_j^\dagger|ar0angle,
+|W
+angle = rac{1}{\sqrt N}\sum_{j=1}^{N}s_j^\dagger|ar0
+angle,
 \qquad
-|ar0angle=|0angle^{\otimes N}.
+|ar0
+angle=|0
+angle^{\otimes N}.
 \]
 
 The corresponding Lean layer is organized around qubit/basis states, vacuum, single-excitation states, and `wState`.
@@ -103,17 +107,21 @@ For n ≥ 2, applying a pure-creation string to |W⟩ creates an (n+1)-particle 
 
 For n = 1, a second cancellation can initially be contemplated, so the proof introduces a third sufficiently separated site. The resulting product state forces the coefficient to zero.
 
-The paper records the sufficient geometric bound
+### Appendix C reading point
+
+Footnote 25 in Appendix C states that, for the separation arguments presented there, it is sufficient to require
 
 \[
 N > 3R.
 \]
 
-This is the direct source counterpart of:
+The Lean specification
 
 ```lean
 hNR : 3 * R < N
 ```
+
+therefore follows the explicit sufficient bound attached to the detailed Appendix C construction.
 
 The final Lean theorem also carries:
 
