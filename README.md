@@ -1,13 +1,21 @@
 # lean-gioia
 
-Lean 4 formalization developed from specifications extracted from Lei Gioia's
-seminar material and related mathematical structure.
+Lean 4 formalization of the W-state locality obstruction developed from Lei
+Gioia's seminar material and the corresponding source result.
 
-The repository organizes:
+**Start with the illustrated report:** [`REPORT/README.md`](REPORT/README.md)  
+**Report page:** `labreports.app/gioia`
+
+The report gives a visual route from the source reading point through
+finite-range witness geometry and support-fiber aggregation to the checked
+vacuum-eigenstate conclusion. Figure D also shows how a leading researcher can
+use this repository from a reading point to a checked specification.
+
+For the formal development, this repository organizes:
 
 1. **formalized mathematical statements** checked by Lean;
 2. **explicit hypotheses and representation choices** supplied to those statements;
-3. **physical interpretation** associated with the formal specifications.
+3. **source-to-formal comparison and physical interpretation** at specified reading points.
 
 The current proof architecture closes at **Checkpoint 52**.
 
@@ -158,6 +166,9 @@ At the CP52 reading point this returns an empty result.
 
 ## Documentation
 
+- [`REPORT/README.md`](REPORT/README.md) — illustrated report and Figures A–D
+- [`SPECIFICATION.md`](SPECIFICATION.md) — closed CP52 formalization specification
+- [`docs/SOURCE_TO_LEAN.md`](docs/SOURCE_TO_LEAN.md) — source-to-formal correspondence
 - [`docs/CHECKPOINT_INDEX.md`](docs/CHECKPOINT_INDEX.md) — proof-development map
 - [`docs/THEOREM_MAP.md`](docs/THEOREM_MAP.md) — principal theorem dependencies
 - [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) — build and audit commands
